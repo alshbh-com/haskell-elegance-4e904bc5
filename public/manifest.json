@@ -1,0 +1,12 @@
+{
+  "name": "Haskell Store",
+  "short_name": "Haskell",
+  "description": "Haskell Store — متجر الفخامة",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#faf7f2",
+  "theme_color": "#0a4d3a",
+  "lang": "ar",
+  "dir": "rtl",
+  "icons": []
+}
