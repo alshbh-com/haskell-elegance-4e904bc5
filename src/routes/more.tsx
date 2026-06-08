@@ -153,8 +153,8 @@ function MorePage() {
       title: "المتجر",
       items: [
         { icon: <BookOpen className="size-5" />, title: "عن المتجر", desc: "قصتنا ورسالتنا", onClick: () => toast.info("Haskell Store — وجهتك الأولى للإكسسوارات الأنيقة 💎") },
-        { icon: <ScrollText className="size-5" />, title: "الشروط والأحكام", desc: "اقرأ قبل الطلب", onClick: soon("الشروط والأحكام") },
-        { icon: <Lock className="size-5" />, title: "سياسة الخصوصية", desc: "حماية بياناتك", onClick: soon("سياسة الخصوصية") },
+        { icon: <ScrollText className="size-5" />, title: "الشروط والأحكام", desc: "اقرأ قبل الطلب", to: "/terms" },
+        { icon: <Lock className="size-5" />, title: "سياسة الخصوصية", desc: "حماية بياناتك", to: "/privacy" },
         { icon: <Share2 className="size-5" />, title: "شارك المتجر", desc: "خلّي أصحابك يعرفونا", onClick: handleShare },
         { icon: <Instagram className="size-5" />, title: "إنستجرام", href: "https://instagram.com/haskellstore" },
         { icon: <Facebook className="size-5" />, title: "فيسبوك", href: "https://facebook.com/haskellstore" },
