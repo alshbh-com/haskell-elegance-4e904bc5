@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Header } from "@/components/Header";
 import { Marquee } from "@/components/Marquee";
 import { ProductCard } from "@/components/ProductCard";
+import { Features30 } from "@/components/Features30";
 import heroImg from "@/assets/hero.jpg";
 
 const homeQuery = queryOptions({
@@ -16,7 +17,7 @@ const homeQuery = queryOptions({
       supabase.from("app_settings").select("*").limit(1).maybeSingle(),
       supabase.from("categories").select("*").eq("is_active", true).order("sort_order"),
       supabase.from("products").select("*").eq("is_featured", true).limit(8),
-      supabase.from("products").select("*").eq("is_bestseller", true).limit(8),
+      Promise.resolve({ data: [] as never[] }),
       supabase.from("products").select("*").not("compare_price", "is", null).limit(8),
     ]);
     return {
