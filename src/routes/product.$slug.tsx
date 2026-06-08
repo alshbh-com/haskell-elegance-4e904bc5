@@ -225,6 +225,16 @@ function ProductPage() {
                     {c}
                   </button>
                 ))}
+              </div>
+            </div>
+          )}
+
+          {/* Trust badges */}
+          <div className="mt-6 grid grid-cols-3 gap-2 rounded-2xl bg-card p-3 shadow-soft">
+            <Trust icon={<Truck className="size-4" />} label="شحن سريع" />
+            <Trust icon={<ShieldCheck className="size-4" />} label="ضمان جودة" />
+            <Trust icon={<RotateCcw className="size-4" />} label="استرجاع 14 يوم" />
+          </div>
         </div>
       </div>
 
@@ -240,17 +250,6 @@ function ProductPage() {
           </div>
         </section>
       )}
-
-          )}
-
-          {/* Trust badges */}
-          <div className="mt-6 grid grid-cols-3 gap-2 rounded-2xl bg-card p-3 shadow-soft">
-            <Trust icon={<Truck className="size-4" />} label="شحن سريع" />
-            <Trust icon={<ShieldCheck className="size-4" />} label="ضمان جودة" />
-            <Trust icon={<RotateCcw className="size-4" />} label="استرجاع 14 يوم" />
-          </div>
-        </div>
-      </div>
 
       {/* Sticky CTA */}
       <div className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-card/95 px-4 py-3 backdrop-blur-xl">
