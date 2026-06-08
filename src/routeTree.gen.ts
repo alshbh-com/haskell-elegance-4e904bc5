@@ -9,23 +9,59 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WishlistRouteImport } from './routes/wishlist'
+import { Route as WalletRouteImport } from './routes/wallet'
+import { Route as VipRouteImport } from './routes/vip'
 import { Route as TrackRouteImport } from './routes/track'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SearchRouteImport } from './routes/search'
+import { Route as ReturnsRouteImport } from './routes/returns'
+import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as OutletRouteImport } from './routes/outlet'
 import { Route as MoreRouteImport } from './routes/more'
+import { Route as LoyaltyRouteImport } from './routes/loyalty'
+import { Route as ImageSearchRouteImport } from './routes/image-search'
+import { Route as HelpRouteImport } from './routes/help'
+import { Route as GiftCardsRouteImport } from './routes/gift-cards'
+import { Route as FaqRouteImport } from './routes/faq'
 import { Route as CompareRouteImport } from './routes/compare'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CategoriesRouteImport } from './routes/categories'
 import { Route as CartRouteImport } from './routes/cart'
+import { Route as BundlesRouteImport } from './routes/bundles'
+import { Route as AppRouteImport } from './routes/app'
 import { Route as AdminRouteImport } from './routes/admin'
+import { Route as AddressesRouteImport } from './routes/addresses'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProductSlugRouteImport } from './routes/product.$slug'
 import { Route as CategorySlugRouteImport } from './routes/category.$slug'
 import { Route as AdminFeaturesRouteImport } from './routes/admin.features'
 import { Route as AdminDashboardRouteImport } from './routes/admin.dashboard'
 
+const WishlistRoute = WishlistRouteImport.update({
+  id: '/wishlist',
+  path: '/wishlist',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WalletRoute = WalletRouteImport.update({
+  id: '/wallet',
+  path: '/wallet',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VipRoute = VipRouteImport.update({
+  id: '/vip',
+  path: '/vip',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TrackRoute = TrackRouteImport.update({
   id: '/track',
   path: '/track',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SearchRoute = SearchRouteImport.update({
@@ -33,9 +69,54 @@ const SearchRoute = SearchRouteImport.update({
   path: '/search',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ReturnsRoute = ReturnsRouteImport.update({
+  id: '/returns',
+  path: '/returns',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OutletRoute = OutletRouteImport.update({
+  id: '/outlet',
+  path: '/outlet',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MoreRoute = MoreRouteImport.update({
   id: '/more',
   path: '/more',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoyaltyRoute = LoyaltyRouteImport.update({
+  id: '/loyalty',
+  path: '/loyalty',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ImageSearchRoute = ImageSearchRouteImport.update({
+  id: '/image-search',
+  path: '/image-search',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HelpRoute = HelpRouteImport.update({
+  id: '/help',
+  path: '/help',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GiftCardsRoute = GiftCardsRouteImport.update({
+  id: '/gift-cards',
+  path: '/gift-cards',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FaqRoute = FaqRouteImport.update({
+  id: '/faq',
+  path: '/faq',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CompareRoute = CompareRouteImport.update({
@@ -58,9 +139,24 @@ const CartRoute = CartRouteImport.update({
   path: '/cart',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BundlesRoute = BundlesRouteImport.update({
+  id: '/bundles',
+  path: '/bundles',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppRoute = AppRouteImport.update({
+  id: '/app',
+  path: '/app',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AddressesRoute = AddressesRouteImport.update({
+  id: '/addresses',
+  path: '/addresses',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -91,14 +187,30 @@ const AdminDashboardRoute = AdminDashboardRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/addresses': typeof AddressesRoute
   '/admin': typeof AdminRouteWithChildren
+  '/app': typeof AppRoute
+  '/bundles': typeof BundlesRoute
   '/cart': typeof CartRoute
   '/categories': typeof CategoriesRoute
   '/checkout': typeof CheckoutRoute
   '/compare': typeof CompareRoute
+  '/faq': typeof FaqRoute
+  '/gift-cards': typeof GiftCardsRoute
+  '/help': typeof HelpRoute
+  '/image-search': typeof ImageSearchRoute
+  '/loyalty': typeof LoyaltyRoute
   '/more': typeof MoreRoute
+  '/outlet': typeof OutletRoute
+  '/privacy': typeof PrivacyRoute
+  '/profile': typeof ProfileRoute
+  '/returns': typeof ReturnsRoute
   '/search': typeof SearchRoute
+  '/terms': typeof TermsRoute
   '/track': typeof TrackRoute
+  '/vip': typeof VipRoute
+  '/wallet': typeof WalletRoute
+  '/wishlist': typeof WishlistRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/features': typeof AdminFeaturesRoute
   '/category/$slug': typeof CategorySlugRoute
@@ -106,14 +218,30 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/addresses': typeof AddressesRoute
   '/admin': typeof AdminRouteWithChildren
+  '/app': typeof AppRoute
+  '/bundles': typeof BundlesRoute
   '/cart': typeof CartRoute
   '/categories': typeof CategoriesRoute
   '/checkout': typeof CheckoutRoute
   '/compare': typeof CompareRoute
+  '/faq': typeof FaqRoute
+  '/gift-cards': typeof GiftCardsRoute
+  '/help': typeof HelpRoute
+  '/image-search': typeof ImageSearchRoute
+  '/loyalty': typeof LoyaltyRoute
   '/more': typeof MoreRoute
+  '/outlet': typeof OutletRoute
+  '/privacy': typeof PrivacyRoute
+  '/profile': typeof ProfileRoute
+  '/returns': typeof ReturnsRoute
   '/search': typeof SearchRoute
+  '/terms': typeof TermsRoute
   '/track': typeof TrackRoute
+  '/vip': typeof VipRoute
+  '/wallet': typeof WalletRoute
+  '/wishlist': typeof WishlistRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/features': typeof AdminFeaturesRoute
   '/category/$slug': typeof CategorySlugRoute
@@ -122,14 +250,30 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/addresses': typeof AddressesRoute
   '/admin': typeof AdminRouteWithChildren
+  '/app': typeof AppRoute
+  '/bundles': typeof BundlesRoute
   '/cart': typeof CartRoute
   '/categories': typeof CategoriesRoute
   '/checkout': typeof CheckoutRoute
   '/compare': typeof CompareRoute
+  '/faq': typeof FaqRoute
+  '/gift-cards': typeof GiftCardsRoute
+  '/help': typeof HelpRoute
+  '/image-search': typeof ImageSearchRoute
+  '/loyalty': typeof LoyaltyRoute
   '/more': typeof MoreRoute
+  '/outlet': typeof OutletRoute
+  '/privacy': typeof PrivacyRoute
+  '/profile': typeof ProfileRoute
+  '/returns': typeof ReturnsRoute
   '/search': typeof SearchRoute
+  '/terms': typeof TermsRoute
   '/track': typeof TrackRoute
+  '/vip': typeof VipRoute
+  '/wallet': typeof WalletRoute
+  '/wishlist': typeof WishlistRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/features': typeof AdminFeaturesRoute
   '/category/$slug': typeof CategorySlugRoute
@@ -139,14 +283,30 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/addresses'
     | '/admin'
+    | '/app'
+    | '/bundles'
     | '/cart'
     | '/categories'
     | '/checkout'
     | '/compare'
+    | '/faq'
+    | '/gift-cards'
+    | '/help'
+    | '/image-search'
+    | '/loyalty'
     | '/more'
+    | '/outlet'
+    | '/privacy'
+    | '/profile'
+    | '/returns'
     | '/search'
+    | '/terms'
     | '/track'
+    | '/vip'
+    | '/wallet'
+    | '/wishlist'
     | '/admin/dashboard'
     | '/admin/features'
     | '/category/$slug'
@@ -154,14 +314,30 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/addresses'
     | '/admin'
+    | '/app'
+    | '/bundles'
     | '/cart'
     | '/categories'
     | '/checkout'
     | '/compare'
+    | '/faq'
+    | '/gift-cards'
+    | '/help'
+    | '/image-search'
+    | '/loyalty'
     | '/more'
+    | '/outlet'
+    | '/privacy'
+    | '/profile'
+    | '/returns'
     | '/search'
+    | '/terms'
     | '/track'
+    | '/vip'
+    | '/wallet'
+    | '/wishlist'
     | '/admin/dashboard'
     | '/admin/features'
     | '/category/$slug'
@@ -169,14 +345,30 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/addresses'
     | '/admin'
+    | '/app'
+    | '/bundles'
     | '/cart'
     | '/categories'
     | '/checkout'
     | '/compare'
+    | '/faq'
+    | '/gift-cards'
+    | '/help'
+    | '/image-search'
+    | '/loyalty'
     | '/more'
+    | '/outlet'
+    | '/privacy'
+    | '/profile'
+    | '/returns'
     | '/search'
+    | '/terms'
     | '/track'
+    | '/vip'
+    | '/wallet'
+    | '/wishlist'
     | '/admin/dashboard'
     | '/admin/features'
     | '/category/$slug'
@@ -185,25 +377,69 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AddressesRoute: typeof AddressesRoute
   AdminRoute: typeof AdminRouteWithChildren
+  AppRoute: typeof AppRoute
+  BundlesRoute: typeof BundlesRoute
   CartRoute: typeof CartRoute
   CategoriesRoute: typeof CategoriesRoute
   CheckoutRoute: typeof CheckoutRoute
   CompareRoute: typeof CompareRoute
+  FaqRoute: typeof FaqRoute
+  GiftCardsRoute: typeof GiftCardsRoute
+  HelpRoute: typeof HelpRoute
+  ImageSearchRoute: typeof ImageSearchRoute
+  LoyaltyRoute: typeof LoyaltyRoute
   MoreRoute: typeof MoreRoute
+  OutletRoute: typeof OutletRoute
+  PrivacyRoute: typeof PrivacyRoute
+  ProfileRoute: typeof ProfileRoute
+  ReturnsRoute: typeof ReturnsRoute
   SearchRoute: typeof SearchRoute
+  TermsRoute: typeof TermsRoute
   TrackRoute: typeof TrackRoute
+  VipRoute: typeof VipRoute
+  WalletRoute: typeof WalletRoute
+  WishlistRoute: typeof WishlistRoute
   CategorySlugRoute: typeof CategorySlugRoute
   ProductSlugRoute: typeof ProductSlugRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/wishlist': {
+      id: '/wishlist'
+      path: '/wishlist'
+      fullPath: '/wishlist'
+      preLoaderRoute: typeof WishlistRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/wallet': {
+      id: '/wallet'
+      path: '/wallet'
+      fullPath: '/wallet'
+      preLoaderRoute: typeof WalletRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/vip': {
+      id: '/vip'
+      path: '/vip'
+      fullPath: '/vip'
+      preLoaderRoute: typeof VipRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/track': {
       id: '/track'
       path: '/track'
       fullPath: '/track'
       preLoaderRoute: typeof TrackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/search': {
@@ -213,11 +449,74 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SearchRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/returns': {
+      id: '/returns'
+      path: '/returns'
+      fullPath: '/returns'
+      preLoaderRoute: typeof ReturnsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/outlet': {
+      id: '/outlet'
+      path: '/outlet'
+      fullPath: '/outlet'
+      preLoaderRoute: typeof OutletRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/more': {
       id: '/more'
       path: '/more'
       fullPath: '/more'
       preLoaderRoute: typeof MoreRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/loyalty': {
+      id: '/loyalty'
+      path: '/loyalty'
+      fullPath: '/loyalty'
+      preLoaderRoute: typeof LoyaltyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/image-search': {
+      id: '/image-search'
+      path: '/image-search'
+      fullPath: '/image-search'
+      preLoaderRoute: typeof ImageSearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/help': {
+      id: '/help'
+      path: '/help'
+      fullPath: '/help'
+      preLoaderRoute: typeof HelpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/gift-cards': {
+      id: '/gift-cards'
+      path: '/gift-cards'
+      fullPath: '/gift-cards'
+      preLoaderRoute: typeof GiftCardsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/faq': {
+      id: '/faq'
+      path: '/faq'
+      fullPath: '/faq'
+      preLoaderRoute: typeof FaqRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/compare': {
@@ -248,11 +547,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CartRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/bundles': {
+      id: '/bundles'
+      path: '/bundles'
+      fullPath: '/bundles'
+      preLoaderRoute: typeof BundlesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app': {
+      id: '/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin': {
       id: '/admin'
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/addresses': {
+      id: '/addresses'
+      path: '/addresses'
+      fullPath: '/addresses'
+      preLoaderRoute: typeof AddressesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -307,14 +627,30 @@ const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AddressesRoute: AddressesRoute,
   AdminRoute: AdminRouteWithChildren,
+  AppRoute: AppRoute,
+  BundlesRoute: BundlesRoute,
   CartRoute: CartRoute,
   CategoriesRoute: CategoriesRoute,
   CheckoutRoute: CheckoutRoute,
   CompareRoute: CompareRoute,
+  FaqRoute: FaqRoute,
+  GiftCardsRoute: GiftCardsRoute,
+  HelpRoute: HelpRoute,
+  ImageSearchRoute: ImageSearchRoute,
+  LoyaltyRoute: LoyaltyRoute,
   MoreRoute: MoreRoute,
+  OutletRoute: OutletRoute,
+  PrivacyRoute: PrivacyRoute,
+  ProfileRoute: ProfileRoute,
+  ReturnsRoute: ReturnsRoute,
   SearchRoute: SearchRoute,
+  TermsRoute: TermsRoute,
   TrackRoute: TrackRoute,
+  VipRoute: VipRoute,
+  WalletRoute: WalletRoute,
+  WishlistRoute: WishlistRoute,
   CategorySlugRoute: CategorySlugRoute,
   ProductSlugRoute: ProductSlugRoute,
 }
