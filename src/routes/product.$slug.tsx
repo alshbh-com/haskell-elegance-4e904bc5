@@ -252,7 +252,10 @@ function ProductPage() {
       )}
 
       {/* Sticky CTA */}
-      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-card/95 px-4 py-3 backdrop-blur-xl">
+      <div
+        className="fixed inset-x-0 z-50 border-t border-border bg-card/95 px-4 py-3 backdrop-blur-xl"
+        style={{ bottom: "calc(72px + env(safe-area-inset-bottom))" }}
+      >
         <div className="mx-auto flex max-w-7xl gap-2">
           <button
             onClick={() => handleAdd(false)}
