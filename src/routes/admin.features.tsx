@@ -1,7 +1,9 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { Header } from "@/components/Header";
 import { supabase } from "@/integrations/supabase/client";
+import { saveFeature, deleteFeature } from "@/lib/features.functions";
 import { toast } from "sonner";
 import { ArrowRight, Plus, Trash2, Save, Eye, EyeOff } from "lucide-react";
 
@@ -29,6 +31,10 @@ function FeaturesAdmin() {
   const [items, setItems] = useState<Feature[]>([]);
   const [loading, setLoading] = useState(true);
   const [savingId, setSavingId] = useState<string | null>(null);
+  const saveFn = useServerFn(saveFeature);
+  const deleteFn = useServerFn(deleteFeature);
+
+  const getPwd = () => sessionStorage.getItem("haskell_admin_pwd") ?? "";
 
   useEffect(() => {
     if (typeof window !== "undefined" && sessionStorage.getItem("haskell_admin") !== "1") {
@@ -54,49 +60,47 @@ function FeaturesAdmin() {
 
   const save = async (f: Feature) => {
     setSavingId(f.id);
-    const { error } = await supabase
-      .from("features")
-      .update({
-        icon: f.icon,
-        title: f.title,
-        description: f.description,
-        sort_order: f.sort_order,
-        is_active: f.is_active,
-      })
-      .eq("id", f.id);
+    try {
+      await saveFn({ data: { password: getPwd(), feature: f } });
+      toast.success("تم الحفظ ✨");
+    } catch (e) {
+      toast.error("فشل الحفظ — جرّب تسجل دخول الأدمن تاني");
+    }
     setSavingId(null);
-    if (error) toast.error("فشل الحفظ — راجع صلاحيات الأدمن");
-    else toast.success("تم الحفظ ✨");
   };
 
   const remove = async (id: string) => {
     if (!confirm("متأكد إنك عايز تحذف الميزة دي؟")) return;
-    const { error } = await supabase.from("features").delete().eq("id", id);
-    if (error) toast.error("فشل الحذف");
-    else {
+    try {
+      await deleteFn({ data: { password: getPwd(), id } });
       toast.success("تم الحذف");
       setItems((arr) => arr.filter((x) => x.id !== id));
+    } catch {
+      toast.error("فشل الحذف");
     }
   };
 
   const add = async () => {
     const nextOrder = (items.at(-1)?.sort_order ?? 0) + 1;
-    const { data, error } = await supabase
-      .from("features")
-      .insert({
-        icon: "Sparkles",
-        title: "ميزة جديدة",
-        description: "وصف الميزة",
-        sort_order: nextOrder,
-      })
-      .select()
-      .single();
-    if (error || !data) {
+    try {
+      const res = await saveFn({
+        data: {
+          password: getPwd(),
+          feature: {
+            icon: "Sparkles",
+            title: "ميزة جديدة",
+            description: "وصف الميزة",
+            sort_order: nextOrder,
+            is_active: true,
+          },
+        },
+      });
+      const { data } = await supabase.from("features").select("*").eq("id", res.id).single();
+      if (data) setItems((arr) => [...arr, data as Feature]);
+      toast.success("اتضافت ميزة جديدة");
+    } catch {
       toast.error("فشل الإضافة");
-      return;
     }
-    setItems((arr) => [...arr, data as Feature]);
-    toast.success("اتضافت ميزة جديدة");
   };
 
   return (
