@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Header } from "@/components/Header";
 import { supabase } from "@/integrations/supabase/client";
-import { Package, Tags, ShoppingCart, Settings as SettingsIcon, LogOut } from "lucide-react";
+import { Package, Tags, ShoppingCart, Settings as SettingsIcon, LogOut, Sparkles } from "lucide-react";
 
 export const Route = createFileRoute("/admin/dashboard")({
   head: () => ({
@@ -52,6 +52,9 @@ function Dashboard() {
         </div>
 
         <div className="mt-6 grid gap-3 md:grid-cols-2">
+          <Link to="/admin/features" className="block">
+            <Tile icon={<Sparkles className="size-5" />} title="إدارة الميزات الـ 30" desc="عدّل العنوان، الوصف، والأيقونة" />
+          </Link>
           <Tile icon={<Package className="size-5" />} title="المنتجات" desc="إضافة، تعديل، حذف" disabled />
           <Tile icon={<Tags className="size-5" />} title="التصنيفات والأقسام" desc="إدارة التصنيفات" disabled />
           <Tile icon={<ShoppingCart className="size-5" />} title="الطلبات" desc="مراجعة وتحديث الحالة" disabled />

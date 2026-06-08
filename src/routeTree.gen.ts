@@ -19,6 +19,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProductSlugRouteImport } from './routes/product.$slug'
 import { Route as CategorySlugRouteImport } from './routes/category.$slug'
+import { Route as AdminFeaturesRouteImport } from './routes/admin.features'
 import { Route as AdminDashboardRouteImport } from './routes/admin.dashboard'
 
 const TrackRoute = TrackRouteImport.update({
@@ -71,6 +72,11 @@ const CategorySlugRoute = CategorySlugRouteImport.update({
   path: '/category/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminFeaturesRoute = AdminFeaturesRouteImport.update({
+  id: '/features',
+  path: '/features',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminDashboardRoute = AdminDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -87,6 +93,7 @@ export interface FileRoutesByFullPath {
   '/search': typeof SearchRoute
   '/track': typeof TrackRoute
   '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/features': typeof AdminFeaturesRoute
   '/category/$slug': typeof CategorySlugRoute
   '/product/$slug': typeof ProductSlugRoute
 }
@@ -100,6 +107,7 @@ export interface FileRoutesByTo {
   '/search': typeof SearchRoute
   '/track': typeof TrackRoute
   '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/features': typeof AdminFeaturesRoute
   '/category/$slug': typeof CategorySlugRoute
   '/product/$slug': typeof ProductSlugRoute
 }
@@ -114,6 +122,7 @@ export interface FileRoutesById {
   '/search': typeof SearchRoute
   '/track': typeof TrackRoute
   '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/features': typeof AdminFeaturesRoute
   '/category/$slug': typeof CategorySlugRoute
   '/product/$slug': typeof ProductSlugRoute
 }
@@ -129,6 +138,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/track'
     | '/admin/dashboard'
+    | '/admin/features'
     | '/category/$slug'
     | '/product/$slug'
   fileRoutesByTo: FileRoutesByTo
@@ -142,6 +152,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/track'
     | '/admin/dashboard'
+    | '/admin/features'
     | '/category/$slug'
     | '/product/$slug'
   id:
@@ -155,6 +166,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/track'
     | '/admin/dashboard'
+    | '/admin/features'
     | '/category/$slug'
     | '/product/$slug'
   fileRoutesById: FileRoutesById
@@ -244,6 +256,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CategorySlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/features': {
+      id: '/admin/features'
+      path: '/features'
+      fullPath: '/admin/features'
+      preLoaderRoute: typeof AdminFeaturesRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/dashboard': {
       id: '/admin/dashboard'
       path: '/dashboard'
@@ -256,10 +275,12 @@ declare module '@tanstack/react-router' {
 
 interface AdminRouteChildren {
   AdminDashboardRoute: typeof AdminDashboardRoute
+  AdminFeaturesRoute: typeof AdminFeaturesRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminDashboardRoute: AdminDashboardRoute,
+  AdminFeaturesRoute: AdminFeaturesRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
@@ -279,3 +300,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
