@@ -174,6 +174,10 @@ function HomePage() {
         </section>
       )}
 
+      {/* 30 FEATURES */}
+      <Features30 />
+
+
       <footer className="mt-10 border-t border-border bg-card">
         <div className="mx-auto max-w-7xl px-4 py-10 text-center">
           <p className="font-display text-2xl font-bold">Haskell <span className="gold-text">Store</span></p>
