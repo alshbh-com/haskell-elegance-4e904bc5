@@ -225,8 +225,22 @@ function ProductPage() {
                     {c}
                   </button>
                 ))}
-              </div>
-            </div>
+        </div>
+      </div>
+
+      {/* You Might Also Like */}
+      {related && related.length > 0 && (
+        <section className="mx-auto max-w-7xl px-4 pb-10 pt-4">
+          <div className="flex items-center gap-2">
+            <Sparkles className="size-5 text-gold" />
+            <h2 className="font-display text-2xl font-bold md:text-3xl">يمكن يعجبك كمان</h2>
+          </div>
+          <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-4">
+            {related.map((p) => <ProductCard key={p.id} product={p} />)}
+          </div>
+        </section>
+      )}
+
           )}
 
           {/* Trust badges */}

@@ -8,6 +8,7 @@ import { Header } from "@/components/Header";
 import { Marquee } from "@/components/Marquee";
 import { ProductCard } from "@/components/ProductCard";
 import { Features30 } from "@/components/Features30";
+import { RecentlyViewed } from "@/components/RecentlyViewed";
 import heroImg from "@/assets/hero.jpg";
 
 const homeQuery = queryOptions({
@@ -174,8 +175,13 @@ function HomePage() {
         </section>
       )}
 
+      {/* RECENTLY VIEWED */}
+      <RecentlyViewed />
+
       {/* 30 FEATURES */}
       <Features30 />
+
+
 
 
       <footer className="mt-10 border-t border-border bg-card">
