@@ -82,16 +82,16 @@ function MorePage() {
     {
       title: "حسابي",
       items: [
-        { icon: <UserCog className="size-5" />, title: "الملف الشخصي", desc: "بياناتك ومعلوماتك", onClick: soon("الملف الشخصي") },
+        { icon: <UserCog className="size-5" />, title: "الملف الشخصي", desc: "بياناتك ومعلوماتك", to: "/profile" },
         { icon: <Package className="size-5" />, title: "طلباتي", desc: "كل الطلبات السابقة", to: "/track" },
         { icon: <Phone className="size-5" />, title: "تتبع طلبك", desc: "اعرف فين طلبك دلوقتي", to: "/track" },
-        { icon: <MapPin className="size-5" />, title: "عناويني", desc: "أضف وعدّل عناوين الشحن", onClick: soon("إدارة العناوين") },
-        { icon: <Heart className="size-5" />, title: "المفضلة", desc: "المنتجات اللي حفظتها", onClick: soon("المفضلة") },
+        { icon: <MapPin className="size-5" />, title: "عناويني", desc: "أضف وعدّل عناوين الشحن", to: "/addresses" },
+        { icon: <Heart className="size-5" />, title: "المفضلة", desc: "المنتجات اللي حفظتها", to: "/wishlist" },
         { icon: <History className="size-5" />, title: "شاهدته مؤخراً", desc: "آخر المنتجات اللي تصفحتها", to: "/" },
         { icon: <GitCompare className="size-5" />, title: "مقارنة المنتجات", desc: "قارن لحد 4 منتجات", to: "/compare" },
-        { icon: <Wallet className="size-5" />, title: "محفظتي", desc: "رصيدك واسترداداتك", onClick: soon("المحفظة") },
-        { icon: <Coins className="size-5" />, title: "نقاط الولاء", desc: "اجمع نقاط مع كل طلب", onClick: soon("نقاط الولاء") },
-        { icon: <Crown className="size-5" />, title: "عضوية VIP", desc: "مزايا حصرية للأعضاء", onClick: soon("عضوية VIP") },
+        { icon: <Wallet className="size-5" />, title: "محفظتي", desc: "رصيدك واسترداداتك", to: "/wallet" },
+        { icon: <Coins className="size-5" />, title: "نقاط الولاء", desc: "اجمع نقاط مع كل طلب", to: "/loyalty" },
+        { icon: <Crown className="size-5" />, title: "عضوية VIP", desc: "مزايا حصرية للأعضاء", to: "/vip" },
       ],
     },
     {
