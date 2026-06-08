@@ -64,7 +64,7 @@ function Checkout() {
       shipping,
       total,
       status: "pending",
-    });
+    } as never);
     setLoading(false);
     if (error) {
       toast.error("حصل خطأ، حاول تاني");
