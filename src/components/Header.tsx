@@ -1,10 +1,8 @@
 import { Link } from "@tanstack/react-router";
-import { ShoppingBag, Search, Menu, Moon, Sun } from "lucide-react";
-import { useCart } from "@/lib/cart-store";
+import { Bell, Moon, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export function Header() {
-  const count = useCart((s) => s.count());
   const [dark, setDark] = useState(false);
 
   useEffect(() => {
@@ -21,33 +19,28 @@ export function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-40 glass">
+    <header
+      className="sticky top-0 z-30 glass"
+      style={{ paddingTop: "env(safe-area-inset-top)" }}
+    >
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3">
-        <button className="p-2 -m-2" aria-label="القائمة">
-          <Menu className="size-5" />
-        </button>
-
         <Link to="/" className="flex items-center gap-2">
-          <span className="font-display text-2xl font-bold tracking-tight">
+          <span className="grid size-9 place-items-center rounded-2xl bg-gradient-to-br from-emerald to-emerald/70 text-gold shadow-luxury">
+            <span className="font-display text-lg font-bold">H</span>
+          </span>
+          <span className="font-display text-xl font-bold leading-none tracking-tight">
             Haskell <span className="gold-text">Store</span>
           </span>
         </Link>
 
         <div className="flex items-center gap-1">
-          <button onClick={toggleTheme} className="p-2 -m-2" aria-label="الثيم">
-            {dark ? <Sun className="size-5" /> : <Moon className="size-5" />}
+          <button onClick={toggleTheme} className="grid size-9 place-items-center rounded-2xl text-muted-foreground transition hover:bg-muted hover:text-foreground" aria-label="الثيم">
+            {dark ? <Sun className="size-[18px]" /> : <Moon className="size-[18px]" />}
           </button>
-          <Link to="/search" className="p-2 -m-2" aria-label="بحث">
-            <Search className="size-5" />
-          </Link>
-          <Link to="/cart" className="relative p-2 -m-2" aria-label="السلة">
-            <ShoppingBag className="size-5" />
-            {count > 0 && (
-              <span className="absolute -top-0.5 -start-0.5 grid h-5 min-w-5 place-items-center rounded-full bg-gold px-1 text-[10px] font-bold text-gold-foreground">
-                {count}
-              </span>
-            )}
-          </Link>
+          <button className="relative grid size-9 place-items-center rounded-2xl text-muted-foreground transition hover:bg-muted hover:text-foreground" aria-label="الإشعارات">
+            <Bell className="size-[18px]" />
+            <span className="absolute top-2 end-2 size-1.5 rounded-full bg-destructive" />
+          </button>
         </div>
       </div>
     </header>

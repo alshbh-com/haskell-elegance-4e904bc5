@@ -13,6 +13,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "sonner";
 import { SocialProofToast } from "@/components/SocialProofToast";
+import { BottomNav } from "@/components/BottomNav";
 
 function NotFoundComponent() {
   return (
@@ -123,8 +124,11 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Outlet />
-      <Toaster position="bottom-left" dir="rtl" richColors closeButton />
+      <div className="pb-20">
+        <Outlet />
+      </div>
+      <BottomNav />
+      <Toaster position="top-center" dir="rtl" richColors closeButton />
       <SocialProofToast />
     </QueryClientProvider>
   );
