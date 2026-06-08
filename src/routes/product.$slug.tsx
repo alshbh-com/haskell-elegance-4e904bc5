@@ -1,14 +1,16 @@
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
-import { useSuspenseQuery, queryOptions } from "@tanstack/react-query";
-import { useState } from "react";
+import { useSuspenseQuery, queryOptions, useQuery } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { ChevronRight, ShoppingBag, Zap, ShieldCheck, Truck, RotateCcw } from "lucide-react";
+import { ChevronRight, ShoppingBag, Zap, ShieldCheck, Truck, RotateCcw, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Header } from "@/components/Header";
 import { FakeViewers } from "@/components/FakeViewers";
 import { FakeStock } from "@/components/FakeStock";
+import { ProductCard } from "@/components/ProductCard";
 import { useCart } from "@/lib/cart-store";
+import { trackViewed } from "@/lib/recently-viewed";
 
 const productQuery = (slug: string) =>
   queryOptions({
@@ -75,6 +77,25 @@ function ProductPage() {
   const discount = product.compare_price
     ? Math.round(((product.compare_price - product.price) / product.compare_price) * 100)
     : 0;
+
+  useEffect(() => {
+    trackViewed(product.slug);
+  }, [product.slug]);
+
+  // You Might Also Like — same category, exclude current
+  const { data: related } = useQuery({
+    queryKey: ["related", product.category_id, product.id],
+    enabled: !!product.category_id,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("products")
+        .select("*")
+        .eq("category_id", product.category_id!)
+        .neq("id", product.id)
+        .limit(4);
+      return data ?? [];
+    },
+  });
 
   const handleAdd = (buyNow = false) => {
     add({
@@ -216,6 +237,19 @@ function ProductPage() {
           </div>
         </div>
       </div>
+
+      {/* You Might Also Like */}
+      {related && related.length > 0 && (
+        <section className="mx-auto max-w-7xl px-4 pb-10 pt-4">
+          <div className="flex items-center gap-2">
+            <Sparkles className="size-5 text-gold" />
+            <h2 className="font-display text-2xl font-bold md:text-3xl">يمكن يعجبك كمان</h2>
+          </div>
+          <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-4">
+            {related.map((p) => <ProductCard key={p.id} product={p} />)}
+          </div>
+        </section>
+      )}
 
       {/* Sticky CTA */}
       <div className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-card/95 px-4 py-3 backdrop-blur-xl">

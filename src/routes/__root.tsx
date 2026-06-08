@@ -14,6 +14,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "sonner";
 import { SocialProofToast } from "@/components/SocialProofToast";
 import { BottomNav } from "@/components/BottomNav";
+import { CompareBar } from "@/components/CompareBar";
 
 function NotFoundComponent() {
   return (
@@ -128,6 +129,7 @@ function RootComponent() {
         <Outlet />
       </div>
       <BottomNav />
+      <CompareBar />
       <Toaster position="top-center" dir="rtl" richColors closeButton />
       <SocialProofToast />
     </QueryClientProvider>

@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as TrackRouteImport } from './routes/track'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as MoreRouteImport } from './routes/more'
+import { Route as CompareRouteImport } from './routes/compare'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CategoriesRouteImport } from './routes/categories'
 import { Route as CartRouteImport } from './routes/cart'
@@ -35,6 +36,11 @@ const SearchRoute = SearchRouteImport.update({
 const MoreRoute = MoreRouteImport.update({
   id: '/more',
   path: '/more',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CompareRoute = CompareRouteImport.update({
+  id: '/compare',
+  path: '/compare',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CheckoutRoute = CheckoutRouteImport.update({
@@ -89,6 +95,7 @@ export interface FileRoutesByFullPath {
   '/cart': typeof CartRoute
   '/categories': typeof CategoriesRoute
   '/checkout': typeof CheckoutRoute
+  '/compare': typeof CompareRoute
   '/more': typeof MoreRoute
   '/search': typeof SearchRoute
   '/track': typeof TrackRoute
@@ -103,6 +110,7 @@ export interface FileRoutesByTo {
   '/cart': typeof CartRoute
   '/categories': typeof CategoriesRoute
   '/checkout': typeof CheckoutRoute
+  '/compare': typeof CompareRoute
   '/more': typeof MoreRoute
   '/search': typeof SearchRoute
   '/track': typeof TrackRoute
@@ -118,6 +126,7 @@ export interface FileRoutesById {
   '/cart': typeof CartRoute
   '/categories': typeof CategoriesRoute
   '/checkout': typeof CheckoutRoute
+  '/compare': typeof CompareRoute
   '/more': typeof MoreRoute
   '/search': typeof SearchRoute
   '/track': typeof TrackRoute
@@ -134,6 +143,7 @@ export interface FileRouteTypes {
     | '/cart'
     | '/categories'
     | '/checkout'
+    | '/compare'
     | '/more'
     | '/search'
     | '/track'
@@ -148,6 +158,7 @@ export interface FileRouteTypes {
     | '/cart'
     | '/categories'
     | '/checkout'
+    | '/compare'
     | '/more'
     | '/search'
     | '/track'
@@ -162,6 +173,7 @@ export interface FileRouteTypes {
     | '/cart'
     | '/categories'
     | '/checkout'
+    | '/compare'
     | '/more'
     | '/search'
     | '/track'
@@ -177,6 +189,7 @@ export interface RootRouteChildren {
   CartRoute: typeof CartRoute
   CategoriesRoute: typeof CategoriesRoute
   CheckoutRoute: typeof CheckoutRoute
+  CompareRoute: typeof CompareRoute
   MoreRoute: typeof MoreRoute
   SearchRoute: typeof SearchRoute
   TrackRoute: typeof TrackRoute
@@ -205,6 +218,13 @@ declare module '@tanstack/react-router' {
       path: '/more'
       fullPath: '/more'
       preLoaderRoute: typeof MoreRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/compare': {
+      id: '/compare'
+      path: '/compare'
+      fullPath: '/compare'
+      preLoaderRoute: typeof CompareRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/checkout': {
@@ -291,6 +311,7 @@ const rootRouteChildren: RootRouteChildren = {
   CartRoute: CartRoute,
   CategoriesRoute: CategoriesRoute,
   CheckoutRoute: CheckoutRoute,
+  CompareRoute: CompareRoute,
   MoreRoute: MoreRoute,
   SearchRoute: SearchRoute,
   TrackRoute: TrackRoute,
