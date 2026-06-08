@@ -78,6 +78,25 @@ function ProductPage() {
     ? Math.round(((product.compare_price - product.price) / product.compare_price) * 100)
     : 0;
 
+  useEffect(() => {
+    trackViewed(product.slug);
+  }, [product.slug]);
+
+  // You Might Also Like — same category, exclude current
+  const { data: related } = useQuery({
+    queryKey: ["related", product.category_id, product.id],
+    enabled: !!product.category_id,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("products")
+        .select("*")
+        .eq("category_id", product.category_id!)
+        .neq("id", product.id)
+        .limit(4);
+      return data ?? [];
+    },
+  });
+
   const handleAdd = (buyNow = false) => {
     add({
       product_id: product.id,
