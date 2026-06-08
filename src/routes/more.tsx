@@ -144,9 +144,9 @@ function MorePage() {
         { icon: <Languages className="size-5" />, title: "اللغة", desc: "العربية (الافتراضية)", onClick: () => toast.info("اللغة الإنجليزية قريباً 🌐") },
         { icon: <Globe className="size-5" />, title: "العملة", desc: "جنيه مصري (EGP)", onClick: () => toast.info("الدولار والريال قريباً 💱") },
         { icon: dark ? <Sun className="size-5" /> : <Moon className="size-5" />, title: dark ? "الوضع النهاري" : "الوضع الليلي", desc: "غيّر مظهر التطبيق", onClick: () => toggle(!dark) },
-        { icon: <Lock className="size-5" />, title: "الخصوصية والأمان", desc: "تحكّم في بياناتك", onClick: soon("إعدادات الخصوصية") },
+        { icon: <Lock className="size-5" />, title: "الخصوصية والأمان", desc: "تحكّم في بياناتك", to: "/privacy" },
         { icon: <Smartphone className="size-5" />, title: "ثبّت التطبيق", desc: "تجربة أسرع وأسهل", onClick: handleInstall },
-        { icon: <Download className="size-5" />, title: "حمّل التطبيق", desc: "Android & iOS قريباً", onClick: soon("تطبيق الموبايل") },
+        { icon: <Download className="size-5" />, title: "حمّل التطبيق", desc: "Android & iOS قريباً", to: "/app" },
       ],
     },
     {
