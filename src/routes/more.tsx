@@ -130,8 +130,8 @@ function MorePage() {
       items: [
         { icon: <MessageCircle className="size-5" />, title: "واتساب", desc: "01278006248", href: "https://wa.me/201278006248?text=أهلاً،%20محتاج%20مساعدة" },
         { icon: <Headphones className="size-5" />, title: "اتصل بينا", desc: "01278006248", href: "tel:+201278006248" },
-        { icon: <HelpCircle className="size-5" />, title: "الأسئلة الشائعة", desc: "إجابات لأكتر الأسئلة", onClick: soon("الأسئلة الشائعة") },
-        { icon: <LifeBuoy className="size-5" />, title: "مركز المساعدة", desc: "دليلك الكامل", onClick: soon("مركز المساعدة") },
+        { icon: <HelpCircle className="size-5" />, title: "الأسئلة الشائعة", desc: "إجابات لأكتر الأسئلة", to: "/faq" },
+        { icon: <LifeBuoy className="size-5" />, title: "مركز المساعدة", desc: "دليلك الكامل", to: "/help" },
         { icon: <Mail className="size-5" />, title: "البريد الإلكتروني", desc: "support@haskellstore.com", href: "mailto:support@haskellstore.com" },
         { icon: <Star className="size-5" />, title: "قيّم تجربتك", desc: "رأيك يهمنا", onClick: () => toast.success("شكراً لك! ⭐⭐⭐⭐⭐ — تم تسجيل تقييمك") },
         { icon: <Megaphone className="size-5" />, title: "بلّغ عن مشكلة", desc: "ساعدنا نحسّن الخدمة", href: "mailto:support@haskellstore.com?subject=بلاغ%20مشكلة" },
