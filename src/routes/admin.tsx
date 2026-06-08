@@ -34,6 +34,7 @@ function AdminGate() {
     if (error) { toast.error("خطأ في التحقق"); return; }
     if (data === true) {
       sessionStorage.setItem("haskell_admin", "1");
+      sessionStorage.setItem("haskell_admin_pwd", pwd);
       toast.success("أهلاً يا أدمن ✨");
       navigate({ to: "/admin/dashboard" });
     } else {
