@@ -71,6 +71,48 @@ export type Database = {
         }
         Relationships: []
       }
+      blog_posts: {
+        Row: {
+          category: string
+          content: string
+          cover_image: string | null
+          created_at: string
+          excerpt: string
+          id: string
+          is_published: boolean
+          published_at: string
+          slug: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          content?: string
+          cover_image?: string | null
+          created_at?: string
+          excerpt?: string
+          id?: string
+          is_published?: boolean
+          published_at?: string
+          slug: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          content?: string
+          cover_image?: string | null
+          created_at?: string
+          excerpt?: string
+          id?: string
+          is_published?: boolean
+          published_at?: string
+          slug?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       categories: {
         Row: {
           created_at: string
@@ -167,6 +209,39 @@ export type Database = {
         }
         Relationships: []
       }
+      notifications: {
+        Row: {
+          body: string
+          created_at: string
+          icon: string
+          id: string
+          is_active: boolean
+          link: string | null
+          title: string
+          type: string
+        }
+        Insert: {
+          body?: string
+          created_at?: string
+          icon?: string
+          id?: string
+          is_active?: boolean
+          link?: string | null
+          title: string
+          type?: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          icon?: string
+          id?: string
+          is_active?: boolean
+          link?: string | null
+          title?: string
+          type?: string
+        }
+        Relationships: []
+      }
       orders: {
         Row: {
           address: string
@@ -211,6 +286,36 @@ export type Database = {
           status?: string
           subtotal?: number
           total?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      policy_pages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          is_published: boolean
+          slug: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          content?: string
+          created_at?: string
+          id?: string
+          is_published?: boolean
+          slug: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          is_published?: boolean
+          slug?: string
+          title?: string
           updated_at?: string
         }
         Relationships: []
@@ -289,6 +394,50 @@ export type Database = {
           },
         ]
       }
+      reviews: {
+        Row: {
+          comment: string
+          created_at: string
+          customer_name: string
+          id: string
+          images: Json
+          is_approved: boolean
+          product_id: string
+          rating: number
+          updated_at: string
+        }
+        Insert: {
+          comment?: string
+          created_at?: string
+          customer_name: string
+          id?: string
+          images?: Json
+          is_approved?: boolean
+          product_id: string
+          rating: number
+          updated_at?: string
+        }
+        Update: {
+          comment?: string
+          created_at?: string
+          customer_name?: string
+          id?: string
+          images?: Json
+          is_approved?: boolean
+          product_id?: string
+          rating?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       sections: {
         Row: {
           category_id: string | null
@@ -329,6 +478,83 @@ export type Database = {
             columns: ["category_id"]
             isOneToOne: false
             referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      support_tickets: {
+        Row: {
+          created_at: string
+          customer_name: string
+          email: string
+          id: string
+          message: string
+          phone: string | null
+          status: string
+          subject: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          customer_name: string
+          email: string
+          id?: string
+          message: string
+          phone?: string | null
+          status?: string
+          subject: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          customer_name?: string
+          email?: string
+          id?: string
+          message?: string
+          phone?: string | null
+          status?: string
+          subject?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      ugc_photos: {
+        Row: {
+          caption: string
+          created_at: string
+          customer_name: string
+          id: string
+          image_url: string
+          is_approved: boolean
+          product_id: string | null
+          sort_order: number
+        }
+        Insert: {
+          caption?: string
+          created_at?: string
+          customer_name?: string
+          id?: string
+          image_url: string
+          is_approved?: boolean
+          product_id?: string | null
+          sort_order?: number
+        }
+        Update: {
+          caption?: string
+          created_at?: string
+          customer_name?: string
+          id?: string
+          image_url?: string
+          is_approved?: boolean
+          product_id?: string | null
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ugc_photos_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
             referencedColumns: ["id"]
           },
         ]
