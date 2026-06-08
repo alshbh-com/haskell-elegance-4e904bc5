@@ -1,14 +1,16 @@
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
-import { useSuspenseQuery, queryOptions } from "@tanstack/react-query";
-import { useState } from "react";
+import { useSuspenseQuery, queryOptions, useQuery } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { ChevronRight, ShoppingBag, Zap, ShieldCheck, Truck, RotateCcw } from "lucide-react";
+import { ChevronRight, ShoppingBag, Zap, ShieldCheck, Truck, RotateCcw, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Header } from "@/components/Header";
 import { FakeViewers } from "@/components/FakeViewers";
 import { FakeStock } from "@/components/FakeStock";
+import { ProductCard } from "@/components/ProductCard";
 import { useCart } from "@/lib/cart-store";
+import { trackViewed } from "@/lib/recently-viewed";
 
 const productQuery = (slug: string) =>
   queryOptions({
