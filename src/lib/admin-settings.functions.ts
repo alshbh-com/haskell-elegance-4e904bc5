@@ -18,6 +18,11 @@ const GlobalToggleInput = z.object({
   show_related_global: z.boolean(),
 });
 
+const PixelInput = z.object({
+  password: z.string().min(1).max(200),
+  facebook_pixel_id: z.string().trim().max(50).regex(/^\d*$/, "Pixel ID لازم يكون أرقام فقط"),
+});
+
 async function verifyPassword(password: string) {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { data, error } = await supabaseAdmin.rpc("verify_admin_password", { _password: password });
@@ -53,6 +58,25 @@ export const updateGlobalRelated = createServerFn({ method: "POST" })
     } else {
       const { error } = await db.from("app_settings")
         .insert({ show_related_global: data.show_related_global } as never);
+      if (error) throw new Error(error.message);
+    }
+    return { ok: true };
+  });
+
+export const updatePixelId = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) => PixelInput.parse(d))
+  .handler(async ({ data }) => {
+    const db = await verifyPassword(data.password);
+    const value = data.facebook_pixel_id || null;
+    const { data: existing } = await db.from("app_settings").select("id").limit(1).maybeSingle();
+    if (existing) {
+      const { error } = await db.from("app_settings")
+        .update({ facebook_pixel_id: value } as never)
+        .eq("id", existing.id);
+      if (error) throw new Error(error.message);
+    } else {
+      const { error } = await db.from("app_settings")
+        .insert({ facebook_pixel_id: value } as never);
       if (error) throw new Error(error.message);
     }
     return { ok: true };

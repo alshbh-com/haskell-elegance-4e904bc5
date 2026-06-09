@@ -267,6 +267,7 @@ export type Database = {
           announcements: Json
           created_at: string
           currency: string
+          facebook_pixel_id: string | null
           header_text: string | null
           id: string
           invoice_name: string
@@ -288,6 +289,7 @@ export type Database = {
           announcements?: Json
           created_at?: string
           currency?: string
+          facebook_pixel_id?: string | null
           header_text?: string | null
           id?: string
           invoice_name?: string
@@ -309,6 +311,7 @@ export type Database = {
           announcements?: Json
           created_at?: string
           currency?: string
+          facebook_pixel_id?: string | null
           header_text?: string | null
           id?: string
           invoice_name?: string
