@@ -40,6 +40,7 @@ import { Route as CategorySlugRouteImport } from './routes/category.$slug'
 import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
 import { Route as AdminFeaturesRouteImport } from './routes/admin.features'
 import { Route as AdminDashboardRouteImport } from './routes/admin.dashboard'
+import { Route as AdminAnalyticsRouteImport } from './routes/admin.analytics'
 
 const WishlistRoute = WishlistRouteImport.update({
   id: '/wishlist',
@@ -196,6 +197,11 @@ const AdminDashboardRoute = AdminDashboardRouteImport.update({
   path: '/admin/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminAnalyticsRoute = AdminAnalyticsRouteImport.update({
+  id: '/admin/analytics',
+  path: '/admin/analytics',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -222,6 +228,7 @@ export interface FileRoutesByFullPath {
   '/vip': typeof VipRoute
   '/wallet': typeof WalletRoute
   '/wishlist': typeof WishlistRoute
+  '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/features': typeof AdminFeaturesRoute
   '/admin/settings': typeof AdminSettingsRoute
@@ -255,6 +262,7 @@ export interface FileRoutesByTo {
   '/vip': typeof VipRoute
   '/wallet': typeof WalletRoute
   '/wishlist': typeof WishlistRoute
+  '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/features': typeof AdminFeaturesRoute
   '/admin/settings': typeof AdminSettingsRoute
@@ -289,6 +297,7 @@ export interface FileRoutesById {
   '/vip': typeof VipRoute
   '/wallet': typeof WalletRoute
   '/wishlist': typeof WishlistRoute
+  '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/features': typeof AdminFeaturesRoute
   '/admin/settings': typeof AdminSettingsRoute
@@ -324,6 +333,7 @@ export interface FileRouteTypes {
     | '/vip'
     | '/wallet'
     | '/wishlist'
+    | '/admin/analytics'
     | '/admin/dashboard'
     | '/admin/features'
     | '/admin/settings'
@@ -357,6 +367,7 @@ export interface FileRouteTypes {
     | '/vip'
     | '/wallet'
     | '/wishlist'
+    | '/admin/analytics'
     | '/admin/dashboard'
     | '/admin/features'
     | '/admin/settings'
@@ -390,6 +401,7 @@ export interface FileRouteTypes {
     | '/vip'
     | '/wallet'
     | '/wishlist'
+    | '/admin/analytics'
     | '/admin/dashboard'
     | '/admin/features'
     | '/admin/settings'
@@ -424,6 +436,7 @@ export interface RootRouteChildren {
   VipRoute: typeof VipRoute
   WalletRoute: typeof WalletRoute
   WishlistRoute: typeof WishlistRoute
+  AdminAnalyticsRoute: typeof AdminAnalyticsRoute
   AdminDashboardRoute: typeof AdminDashboardRoute
   AdminFeaturesRoute: typeof AdminFeaturesRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
@@ -652,6 +665,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminDashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/analytics': {
+      id: '/admin/analytics'
+      path: '/admin/analytics'
+      fullPath: '/admin/analytics'
+      preLoaderRoute: typeof AdminAnalyticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -680,6 +700,7 @@ const rootRouteChildren: RootRouteChildren = {
   VipRoute: VipRoute,
   WalletRoute: WalletRoute,
   WishlistRoute: WishlistRoute,
+  AdminAnalyticsRoute: AdminAnalyticsRoute,
   AdminDashboardRoute: AdminDashboardRoute,
   AdminFeaturesRoute: AdminFeaturesRoute,
   AdminSettingsRoute: AdminSettingsRoute,
@@ -691,13 +712,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
