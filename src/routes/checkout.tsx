@@ -1,9 +1,11 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Header } from "@/components/Header";
 import { useCart } from "@/lib/cart-store";
 import { supabase } from "@/integrations/supabase/client";
+import { trackPixelEvent } from "@/lib/pixel-tracking";
+import { logEvent } from "@/lib/analytics";
 
 const GOVS = [
   "القاهرة", "الجيزة", "الإسكندرية", "القليوبية", "المنوفية", "الغربية", "الدقهلية",
@@ -34,6 +36,19 @@ function Checkout() {
   });
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    if (items.length > 0) {
+      trackPixelEvent("InitiateCheckout", {
+        value: total,
+        currency: "EGP",
+        num_items: items.reduce((n, i) => n + i.quantity, 0),
+        content_ids: items.map((i) => i.product_id),
+      });
+      logEvent("initiate_checkout", { metadata: { total, count: items.length } });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   if (items.length === 0) {
     return (
       <div className="min-h-screen bg-background">
@@ -53,23 +68,68 @@ function Checkout() {
       return;
     }
     setLoading(true);
-    const { error } = await supabase.from("orders").insert({
-      customer_name: form.customer_name,
-      phone: form.phone,
-      address: form.address,
-      governorate: form.governorate,
-      notes: form.notes,
-      items: items as unknown as never,
-      subtotal,
-      shipping,
-      total,
-      status: "pending",
-    } as never);
-    setLoading(false);
-    if (error) {
-      toast.error("حصل خطأ، حاول تاني");
-      return;
+
+    // 1) Upsert customer by phone
+    const phone = form.phone.trim();
+    let customerId: string | null = null;
+    const { data: existing } = await supabase.from("customers").select("id").eq("phone", phone).maybeSingle();
+    if (existing?.id) {
+      customerId = existing.id;
+      await supabase.from("customers").update({
+        name: form.customer_name,
+        address: form.address,
+        governorate: form.governorate,
+        notes: form.notes,
+      } as never).eq("id", customerId);
+    } else {
+      const { data: created, error: cErr } = await supabase.from("customers").insert({
+        name: form.customer_name,
+        phone,
+        address: form.address,
+        governorate: form.governorate,
+        notes: form.notes,
+      } as never).select("id").single();
+      if (cErr || !created) { setLoading(false); toast.error("تعذر حفظ بيانات العميل"); return; }
+      customerId = (created as { id: string }).id;
     }
+
+    // 2) Insert order
+    const orderDetails = items
+      .map((i) => `${i.name} × ${i.quantity}${i.size ? ` (${i.size})` : ""}${i.color ? ` (${i.color})` : ""}`)
+      .join(" | ");
+    const { data: order, error: oErr } = await supabase.from("orders").insert({
+      customer_id: customerId,
+      total_amount: total,
+      shipping_cost: shipping,
+      status: "pending",
+      order_details: orderDetails,
+      notes: form.notes,
+    } as never).select("id").single();
+    if (oErr || !order) { setLoading(false); toast.error("حصل خطأ، حاول تاني"); return; }
+    const orderId = (order as { id: string }).id;
+
+    // 3) Insert order_items
+    const itemsRows = items.map((i) => ({
+      order_id: orderId,
+      product_id: i.product_id,
+      quantity: i.quantity,
+      price: i.price,
+      size: i.size ?? null,
+      color: i.color ?? null,
+      product_details: { name: i.name, image: i.image } as never,
+    }));
+    await supabase.from("order_items").insert(itemsRows as never);
+
+    // 4) Track Purchase
+    trackPixelEvent("Purchase", {
+      value: total,
+      currency: "EGP",
+      content_ids: items.map((i) => i.product_id),
+      num_items: items.reduce((n, i) => n + i.quantity, 0),
+    });
+    logEvent("purchase", { metadata: { order_id: orderId, total } });
+
+    setLoading(false);
     toast.success("تم تأكيد طلبك ✨ هنكلمك قريب");
     clear();
     navigate({ to: "/" });
