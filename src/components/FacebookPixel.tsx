@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
+import { loadPixelDebugFromStorage } from "@/lib/pixel-tracking";
 
 declare global {
   interface Window {
@@ -82,6 +83,7 @@ export function FacebookPixel() {
   const injected = useRef<Set<string>>(new Set());
 
   useEffect(() => {
+    loadPixelDebugFromStorage();
     let mounted = true;
     (async () => {
       const { data } = await supabase
@@ -98,6 +100,20 @@ export function FacebookPixel() {
         if (p.platform === "facebook") injectFacebook(p.pixel_id);
         else if (p.platform === "tiktok") injectTikTok(p.pixel_id);
       }
+      // Log the initial PageView fired on load
+      const dbg = window.__pixelDebug;
+      if (dbg) {
+        for (const p of list) {
+          dbg.log = [{
+            id: Math.random().toString(36).slice(2),
+            ts: Date.now(),
+            platform: p.platform as "facebook" | "tiktok",
+            event: "PageView (init)",
+            data: { pixel_id: p.pixel_id },
+          }, ...dbg.log].slice(0, 100);
+        }
+        dbg.listeners.forEach((l) => l());
+      }
     })();
     return () => { mounted = false; };
   }, []);
@@ -107,6 +123,19 @@ export function FacebookPixel() {
     const unsub = router.subscribe("onResolved", () => {
       window.fbq?.("track", "PageView");
       window.ttq?.page?.();
+      const dbg = window.__pixelDebug;
+      if (dbg) {
+        for (const p of pixels) {
+          dbg.log = [{
+            id: Math.random().toString(36).slice(2),
+            ts: Date.now(),
+            platform: p.platform as "facebook" | "tiktok",
+            event: "PageView",
+            data: { pixel_id: p.pixel_id },
+          }, ...dbg.log].slice(0, 100);
+        }
+        dbg.listeners.forEach((l) => l());
+      }
     });
     return () => { unsub(); };
   }, [pixels, router]);
