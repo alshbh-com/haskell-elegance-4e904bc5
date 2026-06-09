@@ -12,6 +12,7 @@ import { ProductCard } from "@/components/ProductCard";
 import { BuyNowDrawer } from "@/components/BuyNowDrawer";
 import { useCart } from "@/lib/cart-store";
 import { trackViewed } from "@/lib/recently-viewed";
+import { trackPixelEvent } from "@/lib/pixel-tracking";
 
 const productQuery = (slug: string) =>
   queryOptions({
@@ -106,7 +107,14 @@ function ProductPage() {
 
   useEffect(() => {
     trackViewed(product.slug);
-  }, [product.slug]);
+    trackPixelEvent("ViewContent", {
+      content_ids: [product.id],
+      content_name: product.name,
+      content_type: "product",
+      value: unitPrice,
+      currency: "EGP",
+    });
+  }, [product.slug, product.id, product.name, unitPrice]);
 
   // Global + per-product show_related toggle
   const showRelatedProduct = (product as unknown as { show_related?: boolean | null }).show_related;
