@@ -150,6 +150,37 @@ function SettingsAdmin() {
           </div>
         </div>
 
+        {/* Facebook Pixel */}
+        <div className="mt-4 rounded-2xl bg-card p-5 shadow-soft">
+          <p className="font-bold">Facebook Pixel</p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            حط الـ Pixel ID (أرقام فقط، زي 1234567890123456) وهيتركّب تلقائي على كل الصفحات ويسجّل PageView.
+          </p>
+          <div className="mt-3 flex gap-2">
+            <input
+              value={pixelId}
+              onChange={(e) => setPixelId(e.target.value)}
+              placeholder="Facebook Pixel ID"
+              inputMode="numeric"
+              className="flex-1 rounded-xl border border-input bg-background px-3 py-2 text-sm"
+            />
+            <button
+              onClick={savePixel}
+              disabled={savingPixel}
+              className="flex items-center gap-1.5 rounded-full bg-gold px-4 py-2 text-xs font-bold text-gold-foreground disabled:opacity-50"
+            >
+              {savingPixel ? <Loader2 className="size-3.5 animate-spin" /> : <Save className="size-3.5" />}
+              حفظ
+            </button>
+          </div>
+          {pixelId && (
+            <p className="mt-2 text-[11px] text-emerald">
+              ✓ شغّال — افتح الموقع في تاب جديد بعد الحفظ واتأكد من Facebook Pixel Helper.
+            </p>
+          )}
+        </div>
+
+
         {/* Per-product */}
         <div className="mt-6">
           <h2 className="font-display text-xl font-bold">إعدادات لكل منتج</h2>
