@@ -1,5 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { trackPixelEvent } from "@/lib/pixel-tracking";
+import { logEvent } from "@/lib/analytics";
 
 export type CartItem = {
   product_id: string;
@@ -31,7 +33,15 @@ export const useCart = create<CartState>()(
     (set, get) => ({
       items: [],
       isOpen: false,
-      add: (item) =>
+      add: (item) => {
+        trackPixelEvent("AddToCart", {
+          content_ids: [item.product_id],
+          content_name: item.name,
+          content_type: "product",
+          value: item.price * item.quantity,
+          currency: "EGP",
+        });
+        logEvent("add_to_cart", { product_id: item.product_id, metadata: { name: item.name, qty: item.quantity, price: item.price } });
         set((state) => {
           const existing = state.items.find((i) => sameLine(i, item.product_id, item.size, item.color));
           if (existing) {
@@ -44,7 +54,8 @@ export const useCart = create<CartState>()(
             };
           }
           return { items: [...state.items, item] };
-        }),
+        });
+      },
       remove: (p, s, c) =>
         set((state) => ({ items: state.items.filter((i) => !sameLine(i, p, s, c)) })),
       updateQty: (p, qty, s, c) =>

@@ -16,6 +16,8 @@ import { SocialProofToast } from "@/components/SocialProofToast";
 import { BottomNav } from "@/components/BottomNav";
 import { CompareBar } from "@/components/CompareBar";
 import { FacebookPixel } from "@/components/FacebookPixel";
+import { Footer } from "@/components/Footer";
+import { SiteSettingsApplier } from "@/lib/site-settings";
 
 function NotFoundComponent() {
   return (
@@ -130,8 +132,10 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <SiteSettingsApplier />
       <div className="pb-20">
         <Outlet />
+        <Footer />
       </div>
       <BottomNav />
       <CompareBar />
