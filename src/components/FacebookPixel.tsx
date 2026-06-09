@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
+import { loadPixelDebugFromStorage } from "@/lib/pixel-tracking";
 
 declare global {
   interface Window {
