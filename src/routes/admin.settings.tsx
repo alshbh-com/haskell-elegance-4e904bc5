@@ -269,6 +269,11 @@ function SettingsAdmin() {
           </div>
         </div>
 
+        {/* Test Mode for Pixels */}
+        <PixelTestMode pixels={pixels} />
+
+
+
 
 
         {/* Per-product */}
