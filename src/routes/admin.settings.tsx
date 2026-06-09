@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { ArrowRight, Save, Plus, Trash2, Loader2 } from "lucide-react";
 import { Header } from "@/components/Header";
 import { supabase } from "@/integrations/supabase/client";
-import { updateGlobalRelated, updateProductExtras } from "@/lib/admin-settings.functions";
+import { updateGlobalRelated, updateProductExtras, updatePixelId } from "@/lib/admin-settings.functions";
 
 type Tier = { qty: number; discount: number };
 type ProductRow = {
@@ -27,6 +27,8 @@ export const Route = createFileRoute("/admin/settings")({
 function SettingsAdmin() {
   const navigate = useNavigate();
   const [globalRelated, setGlobalRelated] = useState(true);
+  const [pixelId, setPixelId] = useState("");
+  const [savingPixel, setSavingPixel] = useState(false);
   const [products, setProducts] = useState<ProductRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [savingId, setSavingId] = useState<string | null>(null);
@@ -34,6 +36,7 @@ function SettingsAdmin() {
 
   const updateGlobalFn = useServerFn(updateGlobalRelated);
   const updateExtrasFn = useServerFn(updateProductExtras);
+  const updatePixelFn = useServerFn(updatePixelId);
   const getPwd = () => sessionStorage.getItem("haskell_admin_pwd") ?? "";
 
   useEffect(() => {
@@ -43,11 +46,12 @@ function SettingsAdmin() {
     }
     (async () => {
       const [s, p] = await Promise.all([
-        supabase.from("app_settings").select("show_related_global").limit(1).maybeSingle(),
+        supabase.from("app_settings").select("show_related_global,facebook_pixel_id").limit(1).maybeSingle(),
         supabase.from("products").select("id,name,slug,show_related,quantity_pricing").order("created_at", { ascending: false }),
       ]);
-      const sd = s.data as { show_related_global?: boolean } | null;
+      const sd = s.data as { show_related_global?: boolean; facebook_pixel_id?: string | null } | null;
       setGlobalRelated(sd?.show_related_global !== false);
+      setPixelId(sd?.facebook_pixel_id ?? "");
       setProducts(((p.data ?? []) as ProductRow[]).map((r) => ({
         ...r,
         quantity_pricing: Array.isArray(r.quantity_pricing) ? r.quantity_pricing : [],
@@ -67,6 +71,19 @@ function SettingsAdmin() {
       setGlobalRelated(!next);
     }
     setSavingGlobal(false);
+  };
+
+  const savePixel = async () => {
+    const cleaned = pixelId.replace(/\D/g, "");
+    setSavingPixel(true);
+    try {
+      await updatePixelFn({ data: { password: getPwd(), facebook_pixel_id: cleaned } });
+      setPixelId(cleaned);
+      toast.success(cleaned ? "تم حفظ Pixel ID ✨" : "تم مسح Pixel ID");
+    } catch {
+      toast.error("فشل الحفظ — تأكد إن الـ ID أرقام فقط");
+    }
+    setSavingPixel(false);
   };
 
   const patchProduct = (id: string, patch: Partial<ProductRow>) =>
