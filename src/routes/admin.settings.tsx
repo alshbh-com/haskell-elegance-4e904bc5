@@ -197,35 +197,70 @@ function SettingsAdmin() {
           </div>
         </div>
 
-        {/* Facebook Pixel */}
+        {/* Tracking Pixels (Facebook, TikTok…) */}
         <div className="mt-4 rounded-2xl bg-card p-5 shadow-soft">
-          <p className="font-bold">Facebook Pixel</p>
+          <p className="font-bold">بيكسلات التتبع</p>
           <p className="mt-1 text-xs text-muted-foreground">
-            حط الـ Pixel ID (أرقام فقط، زي 1234567890123456) وهيتركّب تلقائي على كل الصفحات ويسجّل PageView.
+            تقدر تضيف أكتر من بيكسل (Facebook / TikTok). كل بيكسل مفعّل هيتركّب تلقائي على كل الصفحات.
           </p>
-          <div className="mt-3 flex gap-2">
+
+          <div className="mt-3 space-y-2">
+            {pixels.length === 0 && (
+              <p className="text-[11px] text-muted-foreground">لا توجد بيكسلات حالياً.</p>
+            )}
+            {pixels.map((p) => (
+              <div key={p.id} className="flex flex-wrap items-center gap-2 rounded-xl border border-input bg-background px-3 py-2">
+                <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-bold uppercase">{p.platform}</span>
+                <span className="font-mono text-xs">{p.pixel_id}</span>
+                {p.name && <span className="text-[11px] text-muted-foreground">— {p.name}</span>}
+                <button
+                  onClick={() => togglePixel(p)}
+                  className={`ms-auto flex items-center gap-1 rounded-full px-2 py-1 text-[11px] font-bold ${p.is_enabled ? "bg-emerald/15 text-emerald" : "bg-muted text-muted-foreground"}`}
+                >
+                  <Power className="size-3" /> {p.is_enabled ? "مفعّل" : "موقوف"}
+                </button>
+                <button
+                  onClick={() => removePixel(p)}
+                  className="grid size-7 place-items-center rounded-lg bg-destructive/10 text-destructive"
+                >
+                  <Trash2 className="size-3" />
+                </button>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-4 grid gap-2 rounded-xl border border-dashed border-input p-3 sm:grid-cols-[120px_1fr_1fr_auto]">
+            <select
+              value={newPlatform}
+              onChange={(e) => setNewPlatform(e.target.value as "facebook" | "tiktok")}
+              className="rounded-xl border border-input bg-background px-2 py-2 text-sm"
+            >
+              <option value="facebook">Facebook</option>
+              <option value="tiktok">TikTok</option>
+            </select>
             <input
-              value={pixelId}
-              onChange={(e) => setPixelId(e.target.value)}
-              placeholder="Facebook Pixel ID"
-              inputMode="numeric"
-              className="flex-1 rounded-xl border border-input bg-background px-3 py-2 text-sm"
+              value={newPixelId}
+              onChange={(e) => setNewPixelId(e.target.value)}
+              placeholder="Pixel ID"
+              className="rounded-xl border border-input bg-background px-3 py-2 text-sm"
+            />
+            <input
+              value={newName}
+              onChange={(e) => setNewName(e.target.value)}
+              placeholder="اسم (اختياري)"
+              className="rounded-xl border border-input bg-background px-3 py-2 text-sm"
             />
             <button
-              onClick={savePixel}
+              onClick={addPixel}
               disabled={savingPixel}
-              className="flex items-center gap-1.5 rounded-full bg-gold px-4 py-2 text-xs font-bold text-gold-foreground disabled:opacity-50"
+              className="flex items-center justify-center gap-1.5 rounded-full bg-gold px-4 py-2 text-xs font-bold text-gold-foreground disabled:opacity-50"
             >
-              {savingPixel ? <Loader2 className="size-3.5 animate-spin" /> : <Save className="size-3.5" />}
-              حفظ
+              {savingPixel ? <Loader2 className="size-3.5 animate-spin" /> : <Plus className="size-3.5" />}
+              إضافة
             </button>
           </div>
-          {pixelId && (
-            <p className="mt-2 text-[11px] text-emerald">
-              ✓ شغّال — افتح الموقع في تاب جديد بعد الحفظ واتأكد من Facebook Pixel Helper.
-            </p>
-          )}
         </div>
+
 
 
         {/* Per-product */}
