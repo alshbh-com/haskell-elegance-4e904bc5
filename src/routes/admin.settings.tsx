@@ -7,6 +7,14 @@ import { Header } from "@/components/Header";
 import { supabase } from "@/integrations/supabase/client";
 import { updateGlobalRelated, updateProductExtras } from "@/lib/admin-settings.functions";
 import { upsertTrackingPixel, deleteTrackingPixel, toggleTrackingPixel } from "@/lib/tracking-pixels.functions";
+import {
+  trackPixelEvent,
+  pixelDebugEnabled,
+  setPixelDebug,
+  subscribePixelDebug,
+  getPixelDebugLog,
+  clearPixelDebugLog,
+} from "@/lib/pixel-tracking";
 
 type PixelRow = { id: string; platform: string; pixel_id: string; name: string | null; is_enabled: boolean };
 type Tier = { qty: number; discount: number };
