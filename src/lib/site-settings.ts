@@ -61,12 +61,10 @@ export function useSiteSettings() {
   });
 
   useEffect(() => {
-    const ch = supabase
-      .channel("app_settings_changes")
-      .on("postgres_changes", { event: "*", schema: "public", table: "app_settings" }, () => {
-        qc.invalidateQueries({ queryKey: ["site-settings"] });
-      })
-      .subscribe();
+    const ch = supabase.channel(`app_settings_changes_${Math.random().toString(36).slice(2)}`);
+    ch.on("postgres_changes" as never, { event: "*", schema: "public", table: "app_settings" }, () => {
+      qc.invalidateQueries({ queryKey: ["site-settings"] });
+    }).subscribe();
     return () => { supabase.removeChannel(ch); };
   }, [qc]);
 

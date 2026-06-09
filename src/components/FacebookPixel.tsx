@@ -116,10 +116,8 @@ export function FacebookPixel() {
   useEffect(() => {
     loadPixelDebugFromStorage();
     loadPixels();
-    const ch = supabase
-      .channel("tracking_pixels_changes")
-      .on("postgres_changes", { event: "*", schema: "public", table: "tracking_pixels" }, () => loadPixels())
-      .subscribe();
+    const ch = supabase.channel(`tracking_pixels_changes_${Math.random().toString(36).slice(2)}`);
+    ch.on("postgres_changes" as never, { event: "*", schema: "public", table: "tracking_pixels" }, () => loadPixels()).subscribe();
     return () => { supabase.removeChannel(ch); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
