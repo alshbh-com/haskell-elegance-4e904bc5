@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Header } from "@/components/Header";
 import { supabase } from "@/integrations/supabase/client";
-import { Package, Tags, ShoppingCart, Settings as SettingsIcon, LogOut, Sparkles } from "lucide-react";
+import { Package, Tags, ShoppingCart, Settings as SettingsIcon, LogOut, Sparkles, BarChart3 } from "lucide-react";
 
 export const Route = createFileRoute("/admin/dashboard")({
   head: () => ({
