@@ -369,3 +369,100 @@ function SettingsAdmin() {
     </div>
   );
 }
+
+function PixelTestMode({ pixels }: { pixels: PixelRow[] }) {
+  const [debug, setDebug] = useState(false);
+  const [, force] = useState(0);
+  const [fbReady, setFbReady] = useState(false);
+  const [ttReady, setTtReady] = useState(false);
+
+  useEffect(() => {
+    setDebug(pixelDebugEnabled());
+    const unsub = subscribePixelDebug(() => force((n) => n + 1));
+    const t = setInterval(() => {
+      setFbReady(typeof window !== "undefined" && typeof window.fbq === "function");
+      setTtReady(typeof window !== "undefined" && !!(window as unknown as { ttq?: { track?: unknown } }).ttq?.track);
+    }, 800);
+    return () => { unsub(); clearInterval(t); };
+  }, []);
+
+  const fbPixels = pixels.filter((p) => p.platform === "facebook" && p.is_enabled);
+  const ttPixels = pixels.filter((p) => p.platform === "tiktok" && p.is_enabled);
+  const log = getPixelDebugLog();
+
+  const toggle = (v: boolean) => { setDebug(v); setPixelDebug(v); };
+
+  const StatusRow = ({ label, ready, list }: { label: string; ready: boolean; list: PixelRow[] }) => (
+    <div className="flex flex-wrap items-center gap-2 rounded-xl border border-input bg-background px-3 py-2">
+      <span className="font-bold text-sm">{label}</span>
+      <span className={`rounded-full px-2 py-0.5 text-[11px] font-bold ${list.length === 0 ? "bg-muted text-muted-foreground" : ready ? "bg-emerald/15 text-emerald" : "bg-amber-500/15 text-amber-600"}`}>
+        {list.length === 0 ? "لا يوجد بيكسل" : ready ? "✓ متركّب وشغّال" : "⏳ بيحمّل…"}
+      </span>
+      {list.map((p) => (
+        <span key={p.id} className="font-mono text-[11px] text-muted-foreground">{p.pixel_id}</span>
+      ))}
+    </div>
+  );
+
+  return (
+    <div className="mt-4 rounded-2xl bg-card p-5 shadow-soft">
+      <div className="flex items-center justify-between gap-3">
+        <div>
+          <p className="font-bold">وضع اختبار البيكسلات</p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            تأكد إن Facebook / TikTok Pixel بيتركّبوا وبيطلقوا PageView و ViewContent على المنتجات.
+          </p>
+        </div>
+        <button
+          onClick={() => toggle(!debug)}
+          className={`relative h-7 w-14 shrink-0 rounded-full transition ${debug ? "bg-emerald" : "bg-muted"}`}
+          title="تفعيل لوج الـ console"
+        >
+          <span className={`absolute top-1 size-5 rounded-full bg-background shadow transition-all ${debug ? "left-1" : "left-8"}`} />
+        </button>
+      </div>
+
+      <div className="mt-4 space-y-2">
+        <StatusRow label="Facebook" ready={fbReady} list={fbPixels} />
+        <StatusRow label="TikTok" ready={ttReady} list={ttPixels} />
+      </div>
+
+      <div className="mt-4 flex flex-wrap gap-2">
+        <button
+          onClick={() => trackPixelEvent("PageView")}
+          className="rounded-full bg-foreground px-3 py-1.5 text-xs font-bold text-background"
+        >إطلاق PageView تجريبي</button>
+        <button
+          onClick={() => trackPixelEvent("ViewContent", { content_name: "Test Product", value: 99, currency: "EGP" })}
+          className="rounded-full bg-gold px-3 py-1.5 text-xs font-bold text-gold-foreground"
+        >إطلاق ViewContent تجريبي</button>
+        <button
+          onClick={clearPixelDebugLog}
+          className="ms-auto rounded-full bg-muted px-3 py-1.5 text-xs font-bold text-muted-foreground"
+        >مسح السجل</button>
+      </div>
+
+      <div className="mt-4">
+        <p className="mb-2 text-xs font-bold">آخر الأحداث ({log.length})</p>
+        <div className="max-h-72 space-y-1 overflow-auto rounded-xl border border-input bg-background p-2">
+          {log.length === 0 && (
+            <p className="p-3 text-center text-[11px] text-muted-foreground">
+              لسه مفيش أحداث. افتح أي صفحة منتج أو اضغط زرار الاختبار فوق.
+            </p>
+          )}
+          {log.map((e) => (
+            <div key={e.id} className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-[11px]">
+              <span className="font-mono text-muted-foreground">{new Date(e.ts).toLocaleTimeString("ar-EG")}</span>
+              <span className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold uppercase ${e.platform === "facebook" ? "bg-blue-500/15 text-blue-600" : e.platform === "tiktok" ? "bg-pink-500/15 text-pink-600" : "bg-muted text-muted-foreground"}`}>{e.platform}</span>
+              <span className="font-bold">{e.event}</span>
+              {e.data && <span className="truncate font-mono text-muted-foreground">{JSON.stringify(e.data)}</span>}
+            </div>
+          ))}
+        </div>
+        <p className="mt-2 text-[11px] text-muted-foreground">
+          نصيحة: ثبّت إضافة <b>Meta Pixel Helper</b> أو <b>TikTok Pixel Helper</b> في كروم — هتشوف البيكسل أخضر يعني شغّال صح وجاهز للإعلانات.
+        </p>
+      </div>
+    </div>
+  );
+}
