@@ -15,6 +15,7 @@ import { Toaster } from "sonner";
 import { SocialProofToast } from "@/components/SocialProofToast";
 import { BottomNav } from "@/components/BottomNav";
 import { CompareBar } from "@/components/CompareBar";
+import { FacebookPixel } from "@/components/FacebookPixel";
 
 function NotFoundComponent() {
   return (
@@ -136,6 +137,7 @@ function RootComponent() {
       <CompareBar />
       <Toaster position="top-center" dir="rtl" richColors closeButton />
       <SocialProofToast />
+      <FacebookPixel />
     </QueryClientProvider>
   );
 }

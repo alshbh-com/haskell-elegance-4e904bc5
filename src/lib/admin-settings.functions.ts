@@ -18,6 +18,11 @@ const GlobalToggleInput = z.object({
   show_related_global: z.boolean(),
 });
 
+const PixelInput = z.object({
+  password: z.string().min(1).max(200),
+  facebook_pixel_id: z.string().trim().max(50).regex(/^\d*$/, "Pixel ID لازم يكون أرقام فقط"),
+});
+
 async function verifyPassword(password: string) {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { data, error } = await supabaseAdmin.rpc("verify_admin_password", { _password: password });
