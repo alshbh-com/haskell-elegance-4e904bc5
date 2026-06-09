@@ -62,3 +62,22 @@ export const updateGlobalRelated = createServerFn({ method: "POST" })
     }
     return { ok: true };
   });
+
+export const updatePixelId = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) => PixelInput.parse(d))
+  .handler(async ({ data }) => {
+    const db = await verifyPassword(data.password);
+    const value = data.facebook_pixel_id || null;
+    const { data: existing } = await db.from("app_settings").select("id").limit(1).maybeSingle();
+    if (existing) {
+      const { error } = await db.from("app_settings")
+        .update({ facebook_pixel_id: value } as never)
+        .eq("id", existing.id);
+      if (error) throw new Error(error.message);
+    } else {
+      const { error } = await db.from("app_settings")
+        .insert({ facebook_pixel_id: value } as never);
+      if (error) throw new Error(error.message);
+    }
+    return { ok: true };
+  });
