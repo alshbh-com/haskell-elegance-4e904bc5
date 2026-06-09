@@ -29,7 +29,10 @@ export const Route = createFileRoute("/admin/settings")({
 function SettingsAdmin() {
   const navigate = useNavigate();
   const [globalRelated, setGlobalRelated] = useState(true);
-  const [pixelId, setPixelId] = useState("");
+  const [pixels, setPixels] = useState<PixelRow[]>([]);
+  const [newPlatform, setNewPlatform] = useState<"facebook" | "tiktok">("facebook");
+  const [newPixelId, setNewPixelId] = useState("");
+  const [newName, setNewName] = useState("");
   const [savingPixel, setSavingPixel] = useState(false);
   const [products, setProducts] = useState<ProductRow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -38,8 +41,18 @@ function SettingsAdmin() {
 
   const updateGlobalFn = useServerFn(updateGlobalRelated);
   const updateExtrasFn = useServerFn(updateProductExtras);
-  const updatePixelFn = useServerFn(updatePixelId);
+  const upsertPixelFn = useServerFn(upsertTrackingPixel);
+  const deletePixelFn = useServerFn(deleteTrackingPixel);
+  const togglePixelFn = useServerFn(toggleTrackingPixel);
   const getPwd = () => sessionStorage.getItem("haskell_admin_pwd") ?? "";
+
+  const reloadPixels = async () => {
+    const { data } = await supabase
+      .from("tracking_pixels")
+      .select("id,platform,pixel_id,name,is_enabled")
+      .order("created_at", { ascending: true });
+    setPixels((data ?? []) as PixelRow[]);
+  };
 
   useEffect(() => {
     if (typeof window !== "undefined" && sessionStorage.getItem("haskell_admin") !== "1") {
@@ -47,13 +60,14 @@ function SettingsAdmin() {
       return;
     }
     (async () => {
-      const [s, p] = await Promise.all([
-        supabase.from("app_settings").select("show_related_global,facebook_pixel_id").limit(1).maybeSingle(),
+      const [s, p, px] = await Promise.all([
+        supabase.from("app_settings").select("show_related_global").limit(1).maybeSingle(),
         supabase.from("products").select("id,name,slug,show_related,quantity_pricing").order("created_at", { ascending: false }),
+        supabase.from("tracking_pixels").select("id,platform,pixel_id,name,is_enabled").order("created_at", { ascending: true }),
       ]);
-      const sd = s.data as { show_related_global?: boolean; facebook_pixel_id?: string | null } | null;
+      const sd = s.data as { show_related_global?: boolean } | null;
       setGlobalRelated(sd?.show_related_global !== false);
-      setPixelId(sd?.facebook_pixel_id ?? "");
+      setPixels((px.data ?? []) as PixelRow[]);
       setProducts(((p.data ?? []) as ProductRow[]).map((r) => ({
         ...r,
         quantity_pricing: Array.isArray(r.quantity_pricing) ? r.quantity_pricing : [],
@@ -75,18 +89,49 @@ function SettingsAdmin() {
     setSavingGlobal(false);
   };
 
-  const savePixel = async () => {
-    const cleaned = pixelId.replace(/\D/g, "");
+  const addPixel = async () => {
+    const cleaned = newPixelId.trim();
+    if (!cleaned) { toast.error("اكتب الـ Pixel ID"); return; }
     setSavingPixel(true);
     try {
-      await updatePixelFn({ data: { password: getPwd(), facebook_pixel_id: cleaned } });
-      setPixelId(cleaned);
-      toast.success(cleaned ? "تم حفظ Pixel ID ✨" : "تم مسح Pixel ID");
+      await upsertPixelFn({ data: {
+        password: getPwd(),
+        platform: newPlatform,
+        pixel_id: cleaned,
+        name: newName.trim() || null,
+        is_enabled: true,
+      } });
+      setNewPixelId(""); setNewName("");
+      await reloadPixels();
+      toast.success("تم إضافة البيكسل ✨");
     } catch {
-      toast.error("فشل الحفظ — تأكد إن الـ ID أرقام فقط");
+      toast.error("فشل الحفظ");
     }
     setSavingPixel(false);
   };
+
+  const togglePixel = async (p: PixelRow) => {
+    const next = !p.is_enabled;
+    setPixels((arr) => arr.map((x) => x.id === p.id ? { ...x, is_enabled: next } : x));
+    try {
+      await togglePixelFn({ data: { password: getPwd(), id: p.id, is_enabled: next } });
+    } catch {
+      setPixels((arr) => arr.map((x) => x.id === p.id ? { ...x, is_enabled: !next } : x));
+      toast.error("فشل التحديث");
+    }
+  };
+
+  const removePixel = async (p: PixelRow) => {
+    if (!confirm(`حذف البيكسل ${p.pixel_id}؟`)) return;
+    try {
+      await deletePixelFn({ data: { password: getPwd(), id: p.id } });
+      await reloadPixels();
+      toast.success("تم الحذف");
+    } catch {
+      toast.error("فشل الحذف");
+    }
+  };
+
 
   const patchProduct = (id: string, patch: Partial<ProductRow>) =>
     setProducts((arr) => arr.map((x) => x.id === id ? { ...x, ...patch } : x));
