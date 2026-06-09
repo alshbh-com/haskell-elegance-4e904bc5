@@ -977,6 +977,7 @@ export type Database = {
           compare_price: number | null
           created_at: string
           description: string | null
+          details: string | null
           fake_stock_max: number
           fake_stock_min: number
           fake_viewers_max: number
@@ -1005,6 +1006,7 @@ export type Database = {
           compare_price?: number | null
           created_at?: string
           description?: string | null
+          details?: string | null
           fake_stock_max?: number
           fake_stock_min?: number
           fake_viewers_max?: number
@@ -1033,6 +1035,7 @@ export type Database = {
           compare_price?: number | null
           created_at?: string
           description?: string | null
+          details?: string | null
           fake_stock_max?: number
           fake_stock_min?: number
           fake_viewers_max?: number
