@@ -52,6 +52,9 @@ function Dashboard() {
         </div>
 
         <div className="mt-6 grid gap-3 md:grid-cols-2">
+          <Link to="/admin/analytics" className="block">
+            <Tile icon={<BarChart3 className="size-5" />} title="الإحصائيات" desc="زيارات، طلبات، مبيعات، تحويلات" />
+          </Link>
           <Link to="/admin/features" className="block">
             <Tile icon={<Sparkles className="size-5" />} title="إدارة الميزات الـ 30" desc="عدّل العنوان، الوصف، والأيقونة" />
           </Link>
