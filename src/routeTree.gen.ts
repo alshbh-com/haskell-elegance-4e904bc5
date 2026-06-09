@@ -31,9 +31,9 @@ import { Route as CategoriesRouteImport } from './routes/categories'
 import { Route as CartRouteImport } from './routes/cart'
 import { Route as BundlesRouteImport } from './routes/bundles'
 import { Route as AppRouteImport } from './routes/app'
-import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AddressesRouteImport } from './routes/addresses'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as ProductSlugRouteImport } from './routes/product.$slug'
 import { Route as CategorySlugRouteImport } from './routes/category.$slug'
 import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
@@ -150,11 +150,6 @@ const AppRoute = AppRouteImport.update({
   path: '/app',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminRoute = AdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AddressesRoute = AddressesRouteImport.update({
   id: '/addresses',
   path: '/addresses',
@@ -163,6 +158,11 @@ const AddressesRoute = AddressesRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProductSlugRoute = ProductSlugRouteImport.update({
@@ -194,7 +194,6 @@ const AdminDashboardRoute = AdminDashboardRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/addresses': typeof AddressesRoute
-  '/admin': typeof AdminRouteWithChildren
   '/app': typeof AppRoute
   '/bundles': typeof BundlesRoute
   '/cart': typeof CartRoute
@@ -222,11 +221,11 @@ export interface FileRoutesByFullPath {
   '/admin/settings': typeof AdminSettingsRoute
   '/category/$slug': typeof CategorySlugRoute
   '/product/$slug': typeof ProductSlugRoute
+  '/admin/': typeof AdminIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/addresses': typeof AddressesRoute
-  '/admin': typeof AdminRouteWithChildren
   '/app': typeof AppRoute
   '/bundles': typeof BundlesRoute
   '/cart': typeof CartRoute
@@ -254,12 +253,12 @@ export interface FileRoutesByTo {
   '/admin/settings': typeof AdminSettingsRoute
   '/category/$slug': typeof CategorySlugRoute
   '/product/$slug': typeof ProductSlugRoute
+  '/admin': typeof AdminIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/addresses': typeof AddressesRoute
-  '/admin': typeof AdminRouteWithChildren
   '/app': typeof AppRoute
   '/bundles': typeof BundlesRoute
   '/cart': typeof CartRoute
@@ -287,13 +286,13 @@ export interface FileRoutesById {
   '/admin/settings': typeof AdminSettingsRoute
   '/category/$slug': typeof CategorySlugRoute
   '/product/$slug': typeof ProductSlugRoute
+  '/admin/': typeof AdminIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/addresses'
-    | '/admin'
     | '/app'
     | '/bundles'
     | '/cart'
@@ -321,11 +320,11 @@ export interface FileRouteTypes {
     | '/admin/settings'
     | '/category/$slug'
     | '/product/$slug'
+    | '/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/addresses'
-    | '/admin'
     | '/app'
     | '/bundles'
     | '/cart'
@@ -353,11 +352,11 @@ export interface FileRouteTypes {
     | '/admin/settings'
     | '/category/$slug'
     | '/product/$slug'
+    | '/admin'
   id:
     | '__root__'
     | '/'
     | '/addresses'
-    | '/admin'
     | '/app'
     | '/bundles'
     | '/cart'
@@ -385,12 +384,12 @@ export interface FileRouteTypes {
     | '/admin/settings'
     | '/category/$slug'
     | '/product/$slug'
+    | '/admin/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AddressesRoute: typeof AddressesRoute
-  AdminRoute: typeof AdminRouteWithChildren
   AppRoute: typeof AppRoute
   BundlesRoute: typeof BundlesRoute
   CartRoute: typeof CartRoute
@@ -415,6 +414,7 @@ export interface RootRouteChildren {
   WishlistRoute: typeof WishlistRoute
   CategorySlugRoute: typeof CategorySlugRoute
   ProductSlugRoute: typeof ProductSlugRoute
+  AdminIndexRoute: typeof AdminIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -573,13 +573,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/addresses': {
       id: '/addresses'
       path: '/addresses'
@@ -592,6 +585,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/admin'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/product/$slug': {
@@ -632,24 +632,9 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface AdminRouteChildren {
-  AdminDashboardRoute: typeof AdminDashboardRoute
-  AdminFeaturesRoute: typeof AdminFeaturesRoute
-  AdminSettingsRoute: typeof AdminSettingsRoute
-}
-
-const AdminRouteChildren: AdminRouteChildren = {
-  AdminDashboardRoute: AdminDashboardRoute,
-  AdminFeaturesRoute: AdminFeaturesRoute,
-  AdminSettingsRoute: AdminSettingsRoute,
-}
-
-const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AddressesRoute: AddressesRoute,
-  AdminRoute: AdminRouteWithChildren,
   AppRoute: AppRoute,
   BundlesRoute: BundlesRoute,
   CartRoute: CartRoute,
@@ -674,7 +659,18 @@ const rootRouteChildren: RootRouteChildren = {
   WishlistRoute: WishlistRoute,
   CategorySlugRoute: CategorySlugRoute,
   ProductSlugRoute: ProductSlugRoute,
+  AdminIndexRoute: AdminIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
