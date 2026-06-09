@@ -276,6 +276,7 @@ export type Database = {
           primary_color: string | null
           seo: Json
           shipping_fee: number
+          show_related_global: boolean
           social_links: Json
           store_name: string
           theme: string
@@ -296,6 +297,7 @@ export type Database = {
           primary_color?: string | null
           seo?: Json
           shipping_fee?: number
+          show_related_global?: boolean
           social_links?: Json
           store_name?: string
           theme?: string
@@ -316,6 +318,7 @@ export type Database = {
           primary_color?: string | null
           seo?: Json
           shipping_fee?: number
+          show_related_global?: boolean
           social_links?: Json
           store_name?: string
           theme?: string
@@ -993,6 +996,7 @@ export type Database = {
           offer_price: number | null
           price: number
           quantity_pricing: Json | null
+          show_related: boolean | null
           size_options: Json | null
           sizes: Json
           slug: string
@@ -1022,6 +1026,7 @@ export type Database = {
           offer_price?: number | null
           price: number
           quantity_pricing?: Json | null
+          show_related?: boolean | null
           size_options?: Json | null
           sizes?: Json
           slug: string
@@ -1051,6 +1056,7 @@ export type Database = {
           offer_price?: number | null
           price?: number
           quantity_pricing?: Json | null
+          show_related?: boolean | null
           size_options?: Json | null
           sizes?: Json
           slug?: string

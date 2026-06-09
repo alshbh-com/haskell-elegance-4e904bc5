@@ -55,10 +55,12 @@ function Dashboard() {
           <Link to="/admin/features" className="block">
             <Tile icon={<Sparkles className="size-5" />} title="إدارة الميزات الـ 30" desc="عدّل العنوان، الوصف، والأيقونة" />
           </Link>
+          <Link to="/admin/settings" className="block">
+            <Tile icon={<SettingsIcon className="size-5" />} title="إعدادات المتجر والعروض" desc="منتجات مشابهة + عروض الكمية" />
+          </Link>
           <Tile icon={<Package className="size-5" />} title="المنتجات" desc="إضافة، تعديل، حذف" disabled />
           <Tile icon={<Tags className="size-5" />} title="التصنيفات والأقسام" desc="إدارة التصنيفات" disabled />
           <Tile icon={<ShoppingCart className="size-5" />} title="الطلبات" desc="مراجعة وتحديث الحالة" disabled />
-          <Tile icon={<SettingsIcon className="size-5" />} title="إعدادات المتجر" desc="اسم، لوجو، Meta Pixel" disabled />
         </div>
 
         <div className="mt-6 rounded-2xl bg-gold/10 p-4 text-xs text-foreground">

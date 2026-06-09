@@ -35,9 +35,9 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Haskell Store — متجر الفخامة" },
-      { name: "description", content: "Haskell Store — تشكيلة فاخرة من الساعات والعطور والإكسسوارات. شحن سريع ودفع عند الاستلام." },
+      { name: "description", content: "Haskell Store — تشكيلة فاخرة من ملابس حريمي وأطفالي والإكسسوارات. شحن سريع ودفع عند الاستلام." },
       { property: "og:title", content: "Haskell Store" },
-      { property: "og:description", content: "متجر الفخامة الأول — ساعات، عطور، حقائب، إكسسوارات" },
+      { property: "og:description", content: "متجر الفخامة الأول — ملابس حريمي، ملابس أطفالي، إكسسوارات" },
     ],
     links: [{ rel: "canonical", href: "/" }],
   }),
@@ -85,7 +85,7 @@ function HomePage() {
                   بكل تفصيلة
                 </h1>
                 <p className="mt-4 max-w-md text-sm text-background/85 md:text-base">
-                  اكتشف تشكيلة Haskell من الساعات والعطور والإكسسوارات — مختارة بعناية، توصيل سريع، دفع عند الاستلام.
+                  اكتشف تشكيلة Haskell من ملابس الحريمي والأطفالي والإكسسوارات — مختارة بعناية، توصيل سريع، دفع عند الاستلام.
                 </p>
                 <div className="mt-7 flex flex-wrap gap-3">
                   <Link
