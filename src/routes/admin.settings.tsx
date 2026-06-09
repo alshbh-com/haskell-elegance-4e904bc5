@@ -2,11 +2,13 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { ArrowRight, Save, Plus, Trash2, Loader2 } from "lucide-react";
+import { ArrowRight, Save, Plus, Trash2, Loader2, Power } from "lucide-react";
 import { Header } from "@/components/Header";
 import { supabase } from "@/integrations/supabase/client";
-import { updateGlobalRelated, updateProductExtras, updatePixelId } from "@/lib/admin-settings.functions";
+import { updateGlobalRelated, updateProductExtras } from "@/lib/admin-settings.functions";
+import { upsertTrackingPixel, deleteTrackingPixel, toggleTrackingPixel } from "@/lib/tracking-pixels.functions";
 
+type PixelRow = { id: string; platform: string; pixel_id: string; name: string | null; is_enabled: boolean };
 type Tier = { qty: number; discount: number };
 type ProductRow = {
   id: string;
