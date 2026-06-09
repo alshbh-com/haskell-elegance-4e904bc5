@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { loadPixelDebugFromStorage } from "@/lib/pixel-tracking";
+import { logEvent } from "@/lib/analytics";
 
 declare global {
   interface Window {
@@ -9,6 +10,7 @@ declare global {
     _fbq?: unknown;
     ttq?: any;
     TiktokAnalyticsObject?: string;
+    snaptr?: any;
   }
 }
 
@@ -17,7 +19,6 @@ type Pixel = { id: string; platform: string; pixel_id: string; is_enabled: boole
 function injectFacebook(pixelId: string) {
   if (typeof window === "undefined") return;
   if (!window.fbq) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (function (f: any, b: Document, e: string, v: string) {
       if (f.fbq) return;
       const n: any = (f.fbq = function (...args: unknown[]) {
@@ -33,16 +34,10 @@ function injectFacebook(pixelId: string) {
   }
   window.fbq!("init", pixelId);
   window.fbq!("track", "PageView");
-
-  const img = document.createElement("img");
-  img.height = 1; img.width = 1; img.style.display = "none";
-  img.src = `https://www.facebook.com/tr?id=${pixelId}&ev=PageView&noscript=1`;
-  document.body.appendChild(img);
 }
 
 function injectTikTok(pixelId: string) {
   if (typeof window === "undefined") return;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (function (w: any, d: Document, t: string) {
     w.TiktokAnalyticsObject = t;
     const ttq: any = (w[t] = w[t] || []);
@@ -77,65 +72,65 @@ function injectTikTok(pixelId: string) {
   })(window, document, "ttq");
 }
 
+function injectSnapchat(pixelId: string) {
+  if (typeof window === "undefined") return;
+  (function (e: any, t: Document, n: string) {
+    if (e.snaptr) return;
+    const r: any = (e.snaptr = function (...args: unknown[]) {
+      r.handleRequest ? r.handleRequest.apply(r, args) : r.queue.push(args);
+    });
+    r.queue = [];
+    const s = "script";
+    const a = t.createElement(s) as HTMLScriptElement;
+    a.async = true;
+    a.src = "https://sc-static.net/scevent.min.js";
+    const u = t.getElementsByTagName(s)[0];
+    u.parentNode?.insertBefore(a, u);
+  })(window, document, "script");
+  window.snaptr("init", pixelId);
+  window.snaptr("track", "PAGE_VIEW");
+}
+
 export function FacebookPixel() {
   const [pixels, setPixels] = useState<Pixel[]>([]);
   const router = useRouter();
   const injected = useRef<Set<string>>(new Set());
 
+  const loadPixels = async () => {
+    const { data } = await supabase
+      .from("tracking_pixels")
+      .select("id,platform,pixel_id,is_enabled")
+      .eq("is_enabled", true);
+    const list = (data ?? []) as Pixel[];
+    setPixels(list);
+    for (const p of list) {
+      const key = `${p.platform}:${p.pixel_id}`;
+      if (injected.current.has(key)) continue;
+      injected.current.add(key);
+      if (p.platform === "facebook") injectFacebook(p.pixel_id);
+      else if (p.platform === "tiktok") injectTikTok(p.pixel_id);
+      else if (p.platform === "snapchat") injectSnapchat(p.pixel_id);
+    }
+  };
+
   useEffect(() => {
     loadPixelDebugFromStorage();
-    let mounted = true;
-    (async () => {
-      const { data } = await supabase
-        .from("tracking_pixels")
-        .select("id,platform,pixel_id,is_enabled")
-        .eq("is_enabled", true);
-      if (!mounted) return;
-      const list = (data ?? []) as Pixel[];
-      setPixels(list);
-      for (const p of list) {
-        const key = `${p.platform}:${p.pixel_id}`;
-        if (injected.current.has(key)) continue;
-        injected.current.add(key);
-        if (p.platform === "facebook") injectFacebook(p.pixel_id);
-        else if (p.platform === "tiktok") injectTikTok(p.pixel_id);
-      }
-      // Log the initial PageView fired on load
-      const dbg = window.__pixelDebug;
-      if (dbg) {
-        for (const p of list) {
-          dbg.log = [{
-            id: Math.random().toString(36).slice(2),
-            ts: Date.now(),
-            platform: p.platform as "facebook" | "tiktok",
-            event: "PageView (init)",
-            data: { pixel_id: p.pixel_id },
-          }, ...dbg.log].slice(0, 100);
-        }
-        dbg.listeners.forEach((l) => l());
-      }
-    })();
-    return () => { mounted = false; };
+    loadPixels();
+    const ch = supabase
+      .channel("tracking_pixels_changes")
+      .on("postgres_changes", { event: "*", schema: "public", table: "tracking_pixels" }, () => loadPixels())
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     if (pixels.length === 0) return;
-    const unsub = router.subscribe("onResolved", () => {
+    const unsub = router.subscribe("onResolved", (e) => {
       window.fbq?.("track", "PageView");
       window.ttq?.page?.();
-      const dbg = window.__pixelDebug;
-      if (dbg) {
-        for (const p of pixels) {
-          dbg.log = [{
-            id: Math.random().toString(36).slice(2),
-            ts: Date.now(),
-            platform: p.platform as "facebook" | "tiktok",
-            event: "PageView",
-            data: { pixel_id: p.pixel_id },
-          }, ...dbg.log].slice(0, 100);
-        }
-        dbg.listeners.forEach((l) => l());
-      }
+      window.snaptr?.("track", "PAGE_VIEW");
+      logEvent("page_view", { metadata: { path: (e as any)?.toLocation?.pathname } });
     });
     return () => { unsub(); };
   }, [pixels, router]);

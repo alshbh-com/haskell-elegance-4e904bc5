@@ -35,6 +35,7 @@ import { Route as AddressesRouteImport } from './routes/addresses'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as ProductSlugRouteImport } from './routes/product.$slug'
+import { Route as PageSlugRouteImport } from './routes/page.$slug'
 import { Route as CategorySlugRouteImport } from './routes/category.$slug'
 import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
 import { Route as AdminFeaturesRouteImport } from './routes/admin.features'
@@ -170,6 +171,11 @@ const ProductSlugRoute = ProductSlugRouteImport.update({
   path: '/product/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PageSlugRoute = PageSlugRouteImport.update({
+  id: '/page/$slug',
+  path: '/page/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CategorySlugRoute = CategorySlugRouteImport.update({
   id: '/category/$slug',
   path: '/category/$slug',
@@ -220,6 +226,7 @@ export interface FileRoutesByFullPath {
   '/admin/features': typeof AdminFeaturesRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/category/$slug': typeof CategorySlugRoute
+  '/page/$slug': typeof PageSlugRoute
   '/product/$slug': typeof ProductSlugRoute
   '/admin/': typeof AdminIndexRoute
 }
@@ -252,6 +259,7 @@ export interface FileRoutesByTo {
   '/admin/features': typeof AdminFeaturesRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/category/$slug': typeof CategorySlugRoute
+  '/page/$slug': typeof PageSlugRoute
   '/product/$slug': typeof ProductSlugRoute
   '/admin': typeof AdminIndexRoute
 }
@@ -285,6 +293,7 @@ export interface FileRoutesById {
   '/admin/features': typeof AdminFeaturesRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/category/$slug': typeof CategorySlugRoute
+  '/page/$slug': typeof PageSlugRoute
   '/product/$slug': typeof ProductSlugRoute
   '/admin/': typeof AdminIndexRoute
 }
@@ -319,6 +328,7 @@ export interface FileRouteTypes {
     | '/admin/features'
     | '/admin/settings'
     | '/category/$slug'
+    | '/page/$slug'
     | '/product/$slug'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
@@ -351,6 +361,7 @@ export interface FileRouteTypes {
     | '/admin/features'
     | '/admin/settings'
     | '/category/$slug'
+    | '/page/$slug'
     | '/product/$slug'
     | '/admin'
   id:
@@ -383,6 +394,7 @@ export interface FileRouteTypes {
     | '/admin/features'
     | '/admin/settings'
     | '/category/$slug'
+    | '/page/$slug'
     | '/product/$slug'
     | '/admin/'
   fileRoutesById: FileRoutesById
@@ -416,6 +428,7 @@ export interface RootRouteChildren {
   AdminFeaturesRoute: typeof AdminFeaturesRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
   CategorySlugRoute: typeof CategorySlugRoute
+  PageSlugRoute: typeof PageSlugRoute
   ProductSlugRoute: typeof ProductSlugRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
@@ -604,6 +617,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProductSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/page/$slug': {
+      id: '/page/$slug'
+      path: '/page/$slug'
+      fullPath: '/page/$slug'
+      preLoaderRoute: typeof PageSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/category/$slug': {
       id: '/category/$slug'
       path: '/category/$slug'
@@ -664,19 +684,10 @@ const rootRouteChildren: RootRouteChildren = {
   AdminFeaturesRoute: AdminFeaturesRoute,
   AdminSettingsRoute: AdminSettingsRoute,
   CategorySlugRoute: CategorySlugRoute,
+  PageSlugRoute: PageSlugRoute,
   ProductSlugRoute: ProductSlugRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
