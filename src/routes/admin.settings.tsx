@@ -393,6 +393,7 @@ function PixelTestMode({ pixels }: { pixels: PixelRow[] }) {
   const [, force] = useState(0);
   const [fbReady, setFbReady] = useState(false);
   const [ttReady, setTtReady] = useState(false);
+  const [snapReady, setSnapReady] = useState(false);
 
   useEffect(() => {
     setDebug(pixelDebugEnabled());
