@@ -6,7 +6,6 @@ import { ArrowRight, Save, Plus, Trash2, Loader2, Power } from "lucide-react";
 import { Header } from "@/components/Header";
 import { supabase } from "@/integrations/supabase/client";
 import { updateGlobalRelated, updateProductExtras } from "@/lib/admin-settings.functions";
-import { upsertTrackingPixel, deleteTrackingPixel, toggleTrackingPixel } from "@/lib/tracking-pixels.functions";
 import {
   trackPixelEvent,
   pixelDebugEnabled,
@@ -38,7 +37,7 @@ function SettingsAdmin() {
   const navigate = useNavigate();
   const [globalRelated, setGlobalRelated] = useState(true);
   const [pixels, setPixels] = useState<PixelRow[]>([]);
-  const [newPlatform, setNewPlatform] = useState<"facebook" | "tiktok">("facebook");
+  const [newPlatform, setNewPlatform] = useState<"facebook" | "tiktok" | "snapchat">("facebook");
   const [newPixelId, setNewPixelId] = useState("");
   const [newName, setNewName] = useState("");
   const [savingPixel, setSavingPixel] = useState(false);
@@ -49,16 +48,23 @@ function SettingsAdmin() {
 
   const updateGlobalFn = useServerFn(updateGlobalRelated);
   const updateExtrasFn = useServerFn(updateProductExtras);
-  const upsertPixelFn = useServerFn(upsertTrackingPixel);
-  const deletePixelFn = useServerFn(deleteTrackingPixel);
-  const togglePixelFn = useServerFn(toggleTrackingPixel);
   const getPwd = () => sessionStorage.getItem("haskell_admin_pwd") ?? "";
 
+  // Verify admin password against the DB via RPC (no service-role key needed)
+  const verifyPwd = async (): Promise<boolean> => {
+    const pwd = getPwd();
+    if (!pwd) return false;
+    const { data, error } = await supabase.rpc("verify_admin_password", { _password: pwd });
+    if (error) { console.error("verify_admin_password", error); return false; }
+    return data === true;
+  };
+
   const reloadPixels = async () => {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("tracking_pixels")
       .select("id,platform,pixel_id,name,is_enabled")
       .order("created_at", { ascending: true });
+    if (error) console.error("reloadPixels", error);
     setPixels((data ?? []) as PixelRow[]);
   };
 
@@ -102,18 +108,22 @@ function SettingsAdmin() {
     if (!cleaned) { toast.error("اكتب الـ Pixel ID"); return; }
     setSavingPixel(true);
     try {
-      await upsertPixelFn({ data: {
-        password: getPwd(),
+      if (!(await verifyPwd())) throw new Error("كلمة سر الأدمن غير صحيحة، سجّل دخول تاني");
+      // prevent duplicates of same (platform, pixel_id)
+      const dup = pixels.find((p) => p.platform === newPlatform && p.pixel_id === cleaned);
+      if (dup) throw new Error("البيكسل ده مضاف قبل كده على نفس المنصة");
+      const { error } = await supabase.from("tracking_pixels").insert({
         platform: newPlatform,
         pixel_id: cleaned,
         name: newName.trim() || null,
         is_enabled: true,
-      } });
+      } as never);
+      if (error) throw new Error(error.message);
       setNewPixelId(""); setNewName("");
       await reloadPixels();
-      toast.success("تم إضافة البيكسل ✨");
-    } catch {
-      toast.error("فشل الحفظ");
+      toast.success("تم إضافة البيكسل ✨ — هيتركّب تلقائي على المتجر");
+    } catch (e) {
+      toast.error((e as Error).message || "فشل الحفظ");
     }
     setSavingPixel(false);
   };
@@ -122,23 +132,30 @@ function SettingsAdmin() {
     const next = !p.is_enabled;
     setPixels((arr) => arr.map((x) => x.id === p.id ? { ...x, is_enabled: next } : x));
     try {
-      await togglePixelFn({ data: { password: getPwd(), id: p.id, is_enabled: next } });
-    } catch {
+      if (!(await verifyPwd())) throw new Error("كلمة سر الأدمن غير صحيحة");
+      const { error } = await supabase.from("tracking_pixels")
+        .update({ is_enabled: next } as never).eq("id", p.id);
+      if (error) throw new Error(error.message);
+      toast.success(next ? "تم تفعيل البيكسل" : "تم إيقاف البيكسل");
+    } catch (e) {
       setPixels((arr) => arr.map((x) => x.id === p.id ? { ...x, is_enabled: !next } : x));
-      toast.error("فشل التحديث");
+      toast.error((e as Error).message || "فشل التحديث");
     }
   };
 
   const removePixel = async (p: PixelRow) => {
     if (!confirm(`حذف البيكسل ${p.pixel_id}؟`)) return;
     try {
-      await deletePixelFn({ data: { password: getPwd(), id: p.id } });
+      if (!(await verifyPwd())) throw new Error("كلمة سر الأدمن غير صحيحة");
+      const { error } = await supabase.from("tracking_pixels").delete().eq("id", p.id);
+      if (error) throw new Error(error.message);
       await reloadPixels();
       toast.success("تم الحذف");
-    } catch {
-      toast.error("فشل الحذف");
+    } catch (e) {
+      toast.error((e as Error).message || "فشل الحذف");
     }
   };
+
 
 
   const patchProduct = (id: string, patch: Partial<ProductRow>) =>
@@ -240,11 +257,12 @@ function SettingsAdmin() {
           <div className="mt-4 grid gap-2 rounded-xl border border-dashed border-input p-3 sm:grid-cols-[120px_1fr_1fr_auto]">
             <select
               value={newPlatform}
-              onChange={(e) => setNewPlatform(e.target.value as "facebook" | "tiktok")}
+              onChange={(e) => setNewPlatform(e.target.value as "facebook" | "tiktok" | "snapchat")}
               className="rounded-xl border border-input bg-background px-2 py-2 text-sm"
             >
               <option value="facebook">Facebook</option>
               <option value="tiktok">TikTok</option>
+              <option value="snapchat">Snapchat</option>
             </select>
             <input
               value={newPixelId}
@@ -375,19 +393,23 @@ function PixelTestMode({ pixels }: { pixels: PixelRow[] }) {
   const [, force] = useState(0);
   const [fbReady, setFbReady] = useState(false);
   const [ttReady, setTtReady] = useState(false);
+  const [snapReady, setSnapReady] = useState(false);
 
   useEffect(() => {
     setDebug(pixelDebugEnabled());
     const unsub = subscribePixelDebug(() => force((n) => n + 1));
     const t = setInterval(() => {
-      setFbReady(typeof window !== "undefined" && typeof window.fbq === "function");
-      setTtReady(typeof window !== "undefined" && !!(window as unknown as { ttq?: { track?: unknown } }).ttq?.track);
+      const w = window as unknown as { fbq?: unknown; ttq?: { track?: unknown }; snaptr?: unknown };
+      setFbReady(typeof window !== "undefined" && typeof w.fbq === "function");
+      setTtReady(typeof window !== "undefined" && !!w.ttq?.track);
+      setSnapReady(typeof window !== "undefined" && typeof w.snaptr === "function");
     }, 800);
     return () => { unsub(); clearInterval(t); };
   }, []);
 
   const fbPixels = pixels.filter((p) => p.platform === "facebook" && p.is_enabled);
   const ttPixels = pixels.filter((p) => p.platform === "tiktok" && p.is_enabled);
+  const snapPixels = pixels.filter((p) => p.platform === "snapchat" && p.is_enabled);
   const log = getPixelDebugLog();
 
   const toggle = (v: boolean) => { setDebug(v); setPixelDebug(v); };
@@ -425,6 +447,7 @@ function PixelTestMode({ pixels }: { pixels: PixelRow[] }) {
       <div className="mt-4 space-y-2">
         <StatusRow label="Facebook" ready={fbReady} list={fbPixels} />
         <StatusRow label="TikTok" ready={ttReady} list={ttPixels} />
+        <StatusRow label="Snapchat" ready={snapReady} list={snapPixels} />
       </div>
 
       <div className="mt-4 flex flex-wrap gap-2">
