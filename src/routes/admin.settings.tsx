@@ -6,7 +6,6 @@ import { ArrowRight, Save, Plus, Trash2, Loader2, Power } from "lucide-react";
 import { Header } from "@/components/Header";
 import { supabase } from "@/integrations/supabase/client";
 import { updateGlobalRelated, updateProductExtras } from "@/lib/admin-settings.functions";
-import { upsertTrackingPixel, deleteTrackingPixel, toggleTrackingPixel } from "@/lib/tracking-pixels.functions";
 import {
   trackPixelEvent,
   pixelDebugEnabled,
