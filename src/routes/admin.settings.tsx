@@ -414,14 +414,18 @@ function PixelTestMode({ pixels }: { pixels: PixelRow[] }) {
 
   const toggle = (v: boolean) => { setDebug(v); setPixelDebug(v); };
 
+  
+
   const StatusRow = ({ label, ready, list }: { label: string; ready: boolean; list: PixelRow[] }) => (
-    <div className="flex flex-wrap items-center gap-2 rounded-xl border border-input bg-background px-3 py-2">
-      <span className="font-bold text-sm">{label}</span>
-      <span className={`rounded-full px-2 py-0.5 text-[11px] font-bold ${list.length === 0 ? "bg-muted text-muted-foreground" : ready ? "bg-emerald/15 text-emerald" : "bg-amber-500/15 text-amber-600"}`}>
-        {list.length === 0 ? "لا يوجد بيكسل" : ready ? "✓ متركّب وشغّال" : "⏳ بيحمّل…"}
-      </span>
+    <div className="space-y-2 rounded-xl border border-input bg-background px-3 py-2">
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="font-bold text-sm">{label}</span>
+        <span className={`rounded-full px-2 py-0.5 text-[11px] font-bold ${list.length === 0 ? "bg-muted text-muted-foreground" : ready ? "bg-emerald/15 text-emerald" : "bg-amber-500/15 text-amber-600"}`}>
+          {list.length === 0 ? "لا يوجد بيكسل مفعّل" : ready ? "✓ السكريبت متركّب" : "⏳ السكريبت لم يُحمَّل بعد"}
+        </span>
+      </div>
       {list.map((p) => (
-        <span key={p.id} className="font-mono text-[11px] text-muted-foreground">{p.pixel_id}</span>
+        <PixelTesterCard key={p.id} pixel={p} scriptLoaded={ready} />
       ))}
     </div>
   );
@@ -432,7 +436,7 @@ function PixelTestMode({ pixels }: { pixels: PixelRow[] }) {
         <div>
           <p className="font-bold">وضع اختبار البيكسلات</p>
           <p className="mt-1 text-xs text-muted-foreground">
-            تأكد إن Facebook / TikTok Pixel بيتركّبوا وبيطلقوا PageView و ViewContent على المنتجات.
+            اضغط «اختبر الآن» على أي بيكسل علشان أتأكدلك إنه شغّال فعلاً وإن مفيش حاجة بتحجبه.
           </p>
         </div>
         <button
@@ -448,7 +452,17 @@ function PixelTestMode({ pixels }: { pixels: PixelRow[] }) {
         <StatusRow label="Facebook" ready={fbReady} list={fbPixels} />
         <StatusRow label="TikTok" ready={ttReady} list={ttPixels} />
         <StatusRow label="Snapchat" ready={snapReady} list={snapPixels} />
+        <button
+          onClick={async () => {
+            for (const p of [...fbPixels, ...ttPixels, ...snapPixels]) {
+              window.dispatchEvent(new CustomEvent(`test-pixel-${p.id}`));
+              await new Promise((r) => setTimeout(r, 100));
+            }
+          }}
+          className="w-full rounded-xl bg-foreground py-2 text-xs font-bold text-background"
+        >اختبر كل البيكسلات دفعة واحدة</button>
       </div>
+      
 
       <div className="mt-4 flex flex-wrap gap-2">
         <button
@@ -489,3 +503,132 @@ function PixelTestMode({ pixels }: { pixels: PixelRow[] }) {
     </div>
   );
 }
+
+type Check = { name: string; ok: boolean; msg: string };
+
+function validateFormat(platform: string, id: string): Check {
+  if (platform === "facebook") {
+    const ok = /^\d{15,16}$/.test(id);
+    return { name: "صيغة الـ ID", ok, msg: ok ? "رقم سليم (15-16 خانة)" : "غلط: لازم يكون رقم 15 أو 16 خانة" };
+  }
+  if (platform === "tiktok") {
+    const ok = /^[A-Z0-9]{18,24}$/.test(id);
+    return { name: "صيغة الـ ID", ok, msg: ok ? "شكله صح" : "غلط: TikTok Pixel ID لازم 18-24 حرف/رقم كابتل (زي C2A3B...)" };
+  }
+  if (platform === "snapchat") {
+    const ok = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+    return { name: "صيغة الـ ID", ok, msg: ok ? "UUID سليم" : "غلط: Snapchat Pixel ID لازم يكون UUID" };
+  }
+  return { name: "صيغة الـ ID", ok: false, msg: "منصة غير مدعومة" };
+}
+
+function imageProbe(url: string, timeout = 4000): Promise<boolean> {
+  return new Promise((resolve) => {
+    const img = new Image();
+    const t = setTimeout(() => { img.src = ""; resolve(false); }, timeout);
+    img.onload = () => { clearTimeout(t); resolve(true); };
+    img.onerror = () => { clearTimeout(t); resolve(false); };
+    img.src = url;
+  });
+}
+
+function fetchProbe(url: string, timeout = 4000): Promise<boolean> {
+  return new Promise((resolve) => {
+    const ctrl = new AbortController();
+    const t = setTimeout(() => { ctrl.abort(); resolve(false); }, timeout);
+    fetch(url, { mode: "no-cors", signal: ctrl.signal })
+      .then(() => { clearTimeout(t); resolve(true); })
+      .catch(() => { clearTimeout(t); resolve(false); });
+  });
+}
+
+async function runPixelTest(p: PixelRow, scriptLoaded: boolean): Promise<{ ok: boolean; checks: Check[]; diagnosis: string }> {
+  const checks: Check[] = [];
+  const fmt = validateFormat(p.platform, p.pixel_id);
+  checks.push(fmt);
+
+  checks.push({ name: "السكريبت محمّل في الصفحة", ok: scriptLoaded, msg: scriptLoaded ? "موجود في window" : "غير موجود — السكريبت لم يُحقن" });
+
+  let networkOk = false;
+  if (p.platform === "facebook") {
+    networkOk = await imageProbe(`https://www.facebook.com/tr/?id=${encodeURIComponent(p.pixel_id)}&ev=PageView&noscript=1&_=${Date.now()}`);
+  } else if (p.platform === "tiktok") {
+    networkOk = await fetchProbe(`https://analytics.tiktok.com/i18n/pixel/events.js?sdkid=${encodeURIComponent(p.pixel_id)}&lib=ttq`);
+  } else if (p.platform === "snapchat") {
+    networkOk = await fetchProbe(`https://sc-static.net/scevent.min.js`);
+  }
+  checks.push({ name: "الاتصال بخوادم المنصة", ok: networkOk, msg: networkOk ? "وصلنا للسيرفر بنجاح" : "محجوب — في الغالب AdBlock أو إضافة خصوصية" });
+
+  let eventFired = false;
+  if (scriptLoaded) {
+    try {
+      const w = window as unknown as { fbq?: (...a: unknown[]) => void; ttq?: { track?: (...a: unknown[]) => void }; snaptr?: (...a: unknown[]) => void };
+      if (p.platform === "facebook" && typeof w.fbq === "function") { w.fbq("trackSingle", p.pixel_id, "PageView"); eventFired = true; }
+      if (p.platform === "tiktok" && w.ttq?.track) { w.ttq.track("ViewContent", { test: true }); eventFired = true; }
+      if (p.platform === "snapchat" && typeof w.snaptr === "function") { w.snaptr("track", "PAGE_VIEW"); eventFired = true; }
+    } catch { /* noop */ }
+  }
+  checks.push({ name: "إطلاق حدث تجريبي", ok: eventFired, msg: eventFired ? "تم الإطلاق — اتفقد من Events Manager" : "ما اتنفذش (السكريبت مش موجود)" });
+
+  const ok = checks.every((c) => c.ok);
+  let diagnosis = "✅ البيكسل شغّال تمام وجاهز للإعلانات.";
+  if (!ok) {
+    if (!fmt.ok) diagnosis = "❌ المشكلة: " + fmt.msg + ". صحّح الـ ID من إعدادات البيكسل فوق.";
+    else if (!scriptLoaded && !networkOk) diagnosis = "❌ المشكلة: متصفحك بيحجب البيكسل (AdBlock/Brave/إضافة خصوصية). البيكسل نفسه مظبوط، بس الاختبار من جهازك مش هينجح. جرّب من متصفح تاني أو موبايل بدون أدبلوك، أو افتح Meta Events Manager → Test Events.";
+    else if (!scriptLoaded) diagnosis = "⚠️ السكريبت لم يُحمّل في هذه الصفحة. حدّث الصفحة (F5) وأعد الاختبار.";
+    else if (!networkOk) diagnosis = "⚠️ الاتصال بخوادم المنصة محجوب من متصفحك — لكن البيكسل قد يعمل لباقي الزوار.";
+    else if (!eventFired) diagnosis = "⚠️ تعذّر إطلاق الحدث برمجيًا — راجع الـ console.";
+  }
+  return { ok, checks, diagnosis };
+}
+
+function PixelTesterCard({ pixel, scriptLoaded }: { pixel: PixelRow; scriptLoaded: boolean }) {
+  const [running, setRunning] = useState(false);
+  const [result, setResult] = useState<{ ok: boolean; checks: Check[]; diagnosis: string } | null>(null);
+
+  const run = async () => {
+    setRunning(true);
+    setResult(null);
+    const r = await runPixelTest(pixel, scriptLoaded);
+    setResult(r);
+    setRunning(false);
+  };
+
+  useEffect(() => {
+    const handler = () => run();
+    window.addEventListener(`test-pixel-${pixel.id}`, handler);
+    return () => window.removeEventListener(`test-pixel-${pixel.id}`, handler);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pixel.id, scriptLoaded]);
+
+  return (
+    <div className="rounded-lg border border-input/60 bg-card p-2">
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="font-mono text-[11px] text-muted-foreground">{pixel.pixel_id}</span>
+        {pixel.name && <span className="text-[11px] text-muted-foreground">— {pixel.name}</span>}
+        <button
+          onClick={run}
+          disabled={running}
+          className="ms-auto rounded-full bg-foreground px-3 py-1 text-[11px] font-bold text-background disabled:opacity-50"
+        >
+          {running ? "بيختبر…" : "اختبر الآن"}
+        </button>
+      </div>
+      {result && (
+        <div className="mt-2 space-y-1">
+          {result.checks.map((c, i) => (
+            <div key={i} className="flex items-start gap-2 text-[11px]">
+              <span className={c.ok ? "text-emerald" : "text-red-500"}>{c.ok ? "✓" : "✗"}</span>
+              <span className="font-bold">{c.name}:</span>
+              <span className="text-muted-foreground">{c.msg}</span>
+            </div>
+          ))}
+          <div className={`mt-2 rounded-md p-2 text-[12px] font-bold ${result.ok ? "bg-emerald/10 text-emerald" : "bg-amber-500/10 text-amber-700"}`}>
+            {result.diagnosis}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
