@@ -399,14 +399,17 @@ function PixelTestMode({ pixels }: { pixels: PixelRow[] }) {
     setDebug(pixelDebugEnabled());
     const unsub = subscribePixelDebug(() => force((n) => n + 1));
     const t = setInterval(() => {
-      setFbReady(typeof window !== "undefined" && typeof window.fbq === "function");
-      setTtReady(typeof window !== "undefined" && !!(window as unknown as { ttq?: { track?: unknown } }).ttq?.track);
+      const w = window as unknown as { fbq?: unknown; ttq?: { track?: unknown }; snaptr?: unknown };
+      setFbReady(typeof window !== "undefined" && typeof w.fbq === "function");
+      setTtReady(typeof window !== "undefined" && !!w.ttq?.track);
+      setSnapReady(typeof window !== "undefined" && typeof w.snaptr === "function");
     }, 800);
     return () => { unsub(); clearInterval(t); };
   }, []);
 
   const fbPixels = pixels.filter((p) => p.platform === "facebook" && p.is_enabled);
   const ttPixels = pixels.filter((p) => p.platform === "tiktok" && p.is_enabled);
+  const snapPixels = pixels.filter((p) => p.platform === "snapchat" && p.is_enabled);
   const log = getPixelDebugLog();
 
   const toggle = (v: boolean) => { setDebug(v); setPixelDebug(v); };
