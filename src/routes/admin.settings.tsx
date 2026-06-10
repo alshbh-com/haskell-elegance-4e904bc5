@@ -414,7 +414,7 @@ function PixelTestMode({ pixels }: { pixels: PixelRow[] }) {
 
   const toggle = (v: boolean) => { setDebug(v); setPixelDebug(v); };
 
-  const readyMap: Record<string, boolean> = { facebook: fbReady, tiktok: ttReady, snapchat: snapReady };
+  
 
   const StatusRow = ({ label, ready, list }: { label: string; ready: boolean; list: PixelRow[] }) => (
     <div className="space-y-2 rounded-xl border border-input bg-background px-3 py-2">
