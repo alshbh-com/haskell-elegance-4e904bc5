@@ -462,7 +462,7 @@ function PixelTestMode({ pixels }: { pixels: PixelRow[] }) {
           className="w-full rounded-xl bg-foreground py-2 text-xs font-bold text-background"
         >اختبر كل البيكسلات دفعة واحدة</button>
       </div>
-      <div className="hidden">{readyMap.facebook ? "" : ""}</div>
+      
 
       <div className="mt-4 flex flex-wrap gap-2">
         <button
