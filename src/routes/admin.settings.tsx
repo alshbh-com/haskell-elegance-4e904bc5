@@ -257,11 +257,12 @@ function SettingsAdmin() {
           <div className="mt-4 grid gap-2 rounded-xl border border-dashed border-input p-3 sm:grid-cols-[120px_1fr_1fr_auto]">
             <select
               value={newPlatform}
-              onChange={(e) => setNewPlatform(e.target.value as "facebook" | "tiktok")}
+              onChange={(e) => setNewPlatform(e.target.value as "facebook" | "tiktok" | "snapchat")}
               className="rounded-xl border border-input bg-background px-2 py-2 text-sm"
             >
               <option value="facebook">Facebook</option>
               <option value="tiktok">TikTok</option>
+              <option value="snapchat">Snapchat</option>
             </select>
             <input
               value={newPixelId}
