@@ -447,6 +447,7 @@ function PixelTestMode({ pixels }: { pixels: PixelRow[] }) {
       <div className="mt-4 space-y-2">
         <StatusRow label="Facebook" ready={fbReady} list={fbPixels} />
         <StatusRow label="TikTok" ready={ttReady} list={ttPixels} />
+        <StatusRow label="Snapchat" ready={snapReady} list={snapPixels} />
       </div>
 
       <div className="mt-4 flex flex-wrap gap-2">
