@@ -414,14 +414,18 @@ function PixelTestMode({ pixels }: { pixels: PixelRow[] }) {
 
   const toggle = (v: boolean) => { setDebug(v); setPixelDebug(v); };
 
+  const readyMap: Record<string, boolean> = { facebook: fbReady, tiktok: ttReady, snapchat: snapReady };
+
   const StatusRow = ({ label, ready, list }: { label: string; ready: boolean; list: PixelRow[] }) => (
-    <div className="flex flex-wrap items-center gap-2 rounded-xl border border-input bg-background px-3 py-2">
-      <span className="font-bold text-sm">{label}</span>
-      <span className={`rounded-full px-2 py-0.5 text-[11px] font-bold ${list.length === 0 ? "bg-muted text-muted-foreground" : ready ? "bg-emerald/15 text-emerald" : "bg-amber-500/15 text-amber-600"}`}>
-        {list.length === 0 ? "لا يوجد بيكسل" : ready ? "✓ متركّب وشغّال" : "⏳ بيحمّل…"}
-      </span>
+    <div className="space-y-2 rounded-xl border border-input bg-background px-3 py-2">
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="font-bold text-sm">{label}</span>
+        <span className={`rounded-full px-2 py-0.5 text-[11px] font-bold ${list.length === 0 ? "bg-muted text-muted-foreground" : ready ? "bg-emerald/15 text-emerald" : "bg-amber-500/15 text-amber-600"}`}>
+          {list.length === 0 ? "لا يوجد بيكسل مفعّل" : ready ? "✓ السكريبت متركّب" : "⏳ السكريبت لم يُحمَّل بعد"}
+        </span>
+      </div>
       {list.map((p) => (
-        <span key={p.id} className="font-mono text-[11px] text-muted-foreground">{p.pixel_id}</span>
+        <PixelTesterCard key={p.id} pixel={p} scriptLoaded={ready} />
       ))}
     </div>
   );
@@ -432,7 +436,7 @@ function PixelTestMode({ pixels }: { pixels: PixelRow[] }) {
         <div>
           <p className="font-bold">وضع اختبار البيكسلات</p>
           <p className="mt-1 text-xs text-muted-foreground">
-            تأكد إن Facebook / TikTok Pixel بيتركّبوا وبيطلقوا PageView و ViewContent على المنتجات.
+            اضغط «اختبر الآن» على أي بيكسل علشان أتأكدلك إنه شغّال فعلاً وإن مفيش حاجة بتحجبه.
           </p>
         </div>
         <button
@@ -448,7 +452,17 @@ function PixelTestMode({ pixels }: { pixels: PixelRow[] }) {
         <StatusRow label="Facebook" ready={fbReady} list={fbPixels} />
         <StatusRow label="TikTok" ready={ttReady} list={ttPixels} />
         <StatusRow label="Snapchat" ready={snapReady} list={snapPixels} />
+        <button
+          onClick={async () => {
+            for (const p of [...fbPixels, ...ttPixels, ...snapPixels]) {
+              window.dispatchEvent(new CustomEvent(`test-pixel-${p.id}`));
+              await new Promise((r) => setTimeout(r, 100));
+            }
+          }}
+          className="w-full rounded-xl bg-foreground py-2 text-xs font-bold text-background"
+        >اختبر كل البيكسلات دفعة واحدة</button>
       </div>
+      <div className="hidden">{readyMap.facebook ? "" : ""}</div>
 
       <div className="mt-4 flex flex-wrap gap-2">
         <button
